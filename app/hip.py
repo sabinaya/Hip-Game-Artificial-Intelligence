@@ -49,3 +49,15 @@ def check_square(data):
 				check across the row, col, across both diagnols
 			"""
 
+def getallsquareconfig():
+	hipsquares = []
+	"""
+		[0 1 2 3 4
+	 	5 6 7 8 9
+	 	10 11 12 13 14
+	 	15 16 17 18 19
+	 	20 21 22 23 24]
+
+	 	To make a square - all the 4 sides of the square will add up uniquely. Take a queue from that
+	 	to check if the square exists
+	 """
