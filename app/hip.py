@@ -21,5 +21,31 @@ There will no human vs computer.
 
 """
 In this program we are taking input states of different board configuration.
+
+Step 1: Human driven board configurations
+Step 2: Given this config return if there is possible square and then true or false accordingly.
 """
+
+def take_input():
+	"""
+		Function to take input from the use of the board config
+	"""
+
+	data = []
+	for i in range(0,100): #We are taking input for the board. For now we use a smaller board of 3*3
+		data.append(raw_input())
+
+	print data #config of the board
+
+
+def check_square(data):
+	"""
+		Function returns a true or false depending on whether a square exists or not
+	"""
+
+	for i in range(0,9):
+		for j in range(0,9):
+			"""
+				check across the row, col, across both diagnols
+			"""
 
