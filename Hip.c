@@ -10,7 +10,8 @@ typedef struct
 //structure to store distances between points
 typedef struct
 {
-	int p1,p2,distance;
+	position p1,p2;
+    int distance;
 }side;
 
 typedef enum { false, true } bool;
@@ -19,11 +20,13 @@ typedef enum { false, true } bool;
 bool check_SquarePresence(position [],int );
 int distance(position , position );
 bool isSquare(side [], position []);
+void combinations_AllPositions(position arr[],int n,int r,int index,position data[],int i);
 
 // Main Function
 
 //	1. Function that takes the state of the board as input and returns whether it contains a square or not (given there are only 4 tokens on the board) ---- DONE
-//  2. Extend the Function isSquare to find squares (given many token on the board) 
+//  2. Extend the Function isSquare to find squares (given many token on the board) ---- DONE
+//  3. Implement a hash function to store distance between two tokens (to enable reusability)
 //  3. Generalize the function to take two kinds of tokens which represent two kinds of tokens
 
 int main()
@@ -47,9 +50,7 @@ int main()
 				positions[pos].y = j; 
 				pos++;
 			}
-		}
-	}
-
+		}	}
 	// pos =0;
 	// for(int i=0; i<9; i++)
 	// {
@@ -63,28 +64,12 @@ int main()
 
 bool check_SquarePresence(position positions[],int pos_size)
 {
-	side sides[100];
-	int pos = 0;
-	for(int i=0; i<pos_size; i++)
-	{
-		for(int j=0; j<pos_size; j++)
-		{
-			if(i != j)
-			{
-				sides[pos].p1 = i;
-				sides[pos].p2 = j;
-				sides[pos].distance = distance(positions[i], positions[j]);
-				pos++;
-			}
-		}
-	}
+    // A temporary array to store all combination one by one
+    position data[pos_size];
 
-	bool result = isSquare(sides,positions);
-	if(result == true)
-		printf("\n The points form a square!");
-	else
-		printf("\n The points does not form a square!");
 
+    // taking all combinations of the positions of size 4
+    combinations_AllPositions(positions, pos_size, 4, 0, data, 0);
 	
 	return 1;
 }
@@ -171,6 +156,56 @@ bool isSquare(side sides[], position positions[])
         }
     }
     return false;
+}
+ 
+/* arr[]  ---> Input Array
+   n      ---> Size of input array
+   r      ---> Size of a combination to be printed
+   index  ---> Current index in data[]
+   data[] ---> Temporary array to store current combination
+   i      ---> index of current element in arr[]     */
+void combinations_AllPositions(position arr[], int n, int r, int index, position data[], int i)
+{
+    // Current combination is ready ---> call distance function and store the distance
+    if (index == r)
+    {
+        side sides[100];
+        int pos = 0;
+        int curr = 0;
+        for(int j=0; j<r; j++)
+        {
+            if(curr != j)
+            {
+                sides[pos].p1 = data[curr];
+                sides[pos].p2 = data[j];
+                sides[pos].distance = distance(data[curr], data[j]);
+                pos++;
+            }
+        }
+        bool result = isSquare(sides,data);
+        if(result == true)
+        {
+            for (int j=0; j<r; j++)
+            printf("\n(%d,%d) ",data[j].x, data[j].y);
+            printf("\n");
+            printf("\n The points form a square!\n");
+        }
+        // else
+        //     printf("\n The points does not form a square!");
+        return;
+    }
+ 
+    // When no more elements are there to put in data[]
+    if (i >= n)
+        return;
+ 
+    // current is included, put next at next location
+    data[index] = arr[i];
+    combinations_AllPositions(arr, n, r, index+1, data, i+1);
+ 
+    // current is excluded, replace it with next (Note that
+    // i+1 is passed, but index is not changed)
+    combinations_AllPositions(arr, n, r, index, data, i+1);
 }
 
 
