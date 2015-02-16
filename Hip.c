@@ -15,6 +15,10 @@ typedef struct
 }side;
 
 typedef enum { false, true } bool;
+// structure to define the state of the board in the game tree
+
+// TODOS: use linked list representation of directed graphs to construct game tree 
+// node of the graph = data+list(pointers) representing the children
 
 // Declaration of Functions
 void check_SquarePresence(position [],int );
@@ -28,8 +32,8 @@ void combinations_AllPositions(position arr[],int n,int r,int index,position dat
 //	1. Function that takes the state of the board as input and returns whether it contains a square or not (given there are only 4 tokens on the board) ---- DONE
 //  2. Extend the Function isSquare to find squares (given many token on the board) ---- DONE
 //  3. Refine the code ---- DONE
-//  4. Implement a hash function to store distance between two tokens (to enable reusability)
-//  5. Generalize the function to take two kinds of tokens which represent two kinds of tokens ---- DONE
+//  4. Generalize the function to take two kinds of tokens which represent two kinds of tokens ---- DONE
+//  5. Formulate a game tree
 
 int main()
 {
@@ -212,6 +216,12 @@ bool isSquare(side sides[], position positions[])
     return false;
 }
  
+ //Construction of Game Tree
+void create_GameTree()
+{
+    
+}
+
 
 
 
