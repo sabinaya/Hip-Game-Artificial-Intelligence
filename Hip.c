@@ -1,3 +1,15 @@
+/** 
+
+	Hip Game
+	Author:
+	LICENSE: MIT License
+
+ */
+
+
+/** Function_name = what it does */
+
+
 #include<stdio.h>
 #include<math.h>
 #include<stdlib.h>
@@ -43,6 +55,10 @@ typedef struct gameTree {
 // TODOS: use linked list representation of directed graphs to construct game tree 
 
 typedef enum { false, true } bool;
+// structure to define the state of the board in the game tree
+
+// TODOS: use linked list representation of directed graphs to construct game tree 
+// node of the graph = data+list(pointers) representing the children
 
 // Declaration of Functions
 void check_SquarePresence(position [],int );
@@ -57,14 +73,20 @@ void create_GameTree();
 //	1. Function that takes the state of the board as input and returns whether it contains a square or not (given there are only 4 tokens on the board) ---- DONE
 //  2. Extend the Function isSquare to find squares (given many token on the board) ---- DONE
 //  3. Refine the code ---- DONE
+<<<<<<< HEAD
 //  4. Generalize the function to take two kinds of tokens ---- DONE
 //  5. Formulate a game tree
 //     * Function to generate all the children of a particular game state ---- DONE
 //     * Construct a directed graph using linked list (structure for vertex and edge ---- DONE)
+=======
+//  4. Generalize the function to take two kinds of tokens which represent two kinds of tokens ---- DONE
+//  5. Formulate a game tree
+>>>>>>> 83de241d277c0302793fafeb556069f5137a4431
 
 int main()
 {
 	// 3x3 matrix to represent the board
+<<<<<<< HEAD
 	int board[3][3];
 	position positions1[9];
     position positions2[9];
@@ -74,6 +96,20 @@ int main()
 	int pos1 =0;
     int pos2 =0;
 	for(int i=0; i<3; i++)
+=======
+	int board[6][6];
+	position positions1[36];
+    position positions2[36];
+
+	// get a sample board state from the user (grid containing 0s and 1s, 1s representing the presents of a token)
+	// For now, take sample containing only tokens of only one kind
+
+	printf("\n Enter the Grid elements!\n");
+	int pos1 =0;
+    int pos2 =0;
+
+	for(int i=0; i<6; i++)
+>>>>>>> 83de241d277c0302793fafeb556069f5137a4431
 	{
 		for(int j=0; j<3; j++)
 		{
@@ -106,17 +142,22 @@ void check_SquarePresence(position positions[],int pos_size)
 {
     // A temporary array to store all combination one by one
     position data[pos_size];
-    // taking all combinations of the positions of size 4
-    combinations_AllPositions(positions, pos_size, 4, 0, data, 0);
+    
+	// taking all combinations of the positions of size 4
+	combinations_AllPositions(positions, pos_size, 4, 0, data, 0);
 	return;
 }
 
-/* arr[]  ---> Input Array
+/*** 
+   arr[]  ---> Input Array
    n      ---> Size of input array
    r      ---> Size of a combination to be printed
    index  ---> Current index in data[]
    data[] ---> Temporary array to store current combination
-   i      ---> index of current element in arr[]     */
+   i      ---> index of current element in arr[]     
+*/
+
+
 void combinations_AllPositions(position arr[], int n, int r, int index, position data[], int i)
 {
     // Current combination is ready ---> call distance function and store the distance
@@ -242,6 +283,7 @@ bool isSquare(side sides[], position positions[])
     }
     return false;
 }
+<<<<<<< HEAD
 
 //Construction of Game Tree
 void create_GameTree()
@@ -316,3 +358,11 @@ void recursion_game(int element[N][N], int row, int col)
 
 
 
+=======
+ 
+ //Construction of Game Tree
+void create_GameTree()
+{
+    
+}
+>>>>>>> 83de241d277c0302793fafeb556069f5137a4431
