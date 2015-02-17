@@ -1,3 +1,15 @@
+/** 
+
+	Hip Game
+	Author:
+	LICENSE: MIT License
+
+ */
+
+
+/** Function_name = what it does */
+
+
 #include<stdio.h>
 #include<math.h>
 
@@ -41,11 +53,14 @@ int main()
 	int board[6][6];
 	position positions1[36];
     position positions2[36];
+
 	// get a sample board state from the user (grid containing 0s and 1s, 1s representing the presents of a token)
 	// For now, take sample containing only tokens of only one kind
+
 	printf("\n Enter the Grid elements!\n");
 	int pos1 =0;
     int pos2 =0;
+
 	for(int i=0; i<6; i++)
 	{
 		for(int j=0; j<6; j++)
@@ -77,17 +92,22 @@ void check_SquarePresence(position positions[],int pos_size)
 {
     // A temporary array to store all combination one by one
     position data[pos_size];
-    // taking all combinations of the positions of size 4
-    combinations_AllPositions(positions, pos_size, 4, 0, data, 0);
+    
+	// taking all combinations of the positions of size 4
+	combinations_AllPositions(positions, pos_size, 4, 0, data, 0);
 	return;
 }
 
-/* arr[]  ---> Input Array
+/*** 
+   arr[]  ---> Input Array
    n      ---> Size of input array
    r      ---> Size of a combination to be printed
    index  ---> Current index in data[]
    data[] ---> Temporary array to store current combination
-   i      ---> index of current element in arr[]     */
+   i      ---> index of current element in arr[]     
+*/
+
+
 void combinations_AllPositions(position arr[], int n, int r, int index, position data[], int i)
 {
     // Current combination is ready ---> call distance function and store the distance
@@ -221,7 +241,3 @@ void create_GameTree()
 {
     
 }
-
-
-
-
