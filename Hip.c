@@ -1,5 +1,8 @@
 #include<stdio.h>
 #include<math.h>
+#include<stdlib.h>
+#include<string.h>
+#define N 3
 
 // structure to store the positions of the tokens on the board
 typedef struct
@@ -14,13 +17,39 @@ typedef struct
     int distance;
 }side;
 
+// structure to define the state of the board in the game tree
+
+typedef struct 
+{
+    int board_state[3][3];
+    int heuristic_value;
+}graph_node;
+
+typedef struct vertexTag {
+    graph_node element;
+    struct edgeTag *edges;
+    struct vertexTag *next;
+} vertexT;
+
+typedef struct edgeTag {
+    struct vertexTag *connectsTo;
+    struct edgeTag *next;
+} edgeT;
+
+typedef struct gameTree {
+    vertexT *vertices;
+} gameTree;
+
+// TODOS: use linked list representation of directed graphs to construct game tree 
+
 typedef enum { false, true } bool;
 
 // Declaration of Functions
 void check_SquarePresence(position [],int );
+void combinations_AllPositions(position arr[],int n,int r,int index,position data[],int i);
 int distance(position , position );
 bool isSquare(side [], position []);
-void combinations_AllPositions(position arr[],int n,int r,int index,position data[],int i);
+void create_GameTree();
 
 // Main Function
 
@@ -28,24 +57,27 @@ void combinations_AllPositions(position arr[],int n,int r,int index,position dat
 //	1. Function that takes the state of the board as input and returns whether it contains a square or not (given there are only 4 tokens on the board) ---- DONE
 //  2. Extend the Function isSquare to find squares (given many token on the board) ---- DONE
 //  3. Refine the code ---- DONE
-//  4. Implement a hash function to store distance between two tokens (to enable reusability)
-//  5. Generalize the function to take two kinds of tokens which represent two kinds of tokens ---- DONE
+//  4. Generalize the function to take two kinds of tokens ---- DONE
+//  5. Formulate a game tree
+//     * Function to generate all the children of a particular game state ---- DONE
+//     * Construct a directed graph using linked list (structure for vertex and edge ---- DONE)
 
 int main()
 {
 	// 3x3 matrix to represent the board
-	int board[6][6];
-	position positions1[36];
-    position positions2[36];
+	int board[3][3];
+	position positions1[9];
+    position positions2[9];
 	// get a sample board state from the user (grid containing 0s and 1s, 1s representing the presents of a token)
 	// For now, take sample containing only tokens of only one kind
-	printf("\n Enter the Grid elements!\n");
+	printf("\n Enter the Grid elements!\n\n 1--> To represent red tokens\n\n 2--> To represent blue tokens\n\n 3---> To represent blank position\n\n");
 	int pos1 =0;
     int pos2 =0;
-	for(int i=0; i<6; i++)
+	for(int i=0; i<3; i++)
 	{
-		for(int j=0; j<6; j++)
+		for(int j=0; j<3; j++)
 		{
+            printf("\n Position (%d,%d):", i,j);
 			scanf("%d",&board[i][j]);
 			if(board[i][j] == 1)
 			{
@@ -64,8 +96,9 @@ int main()
 	
     printf("\n ------------------------- Red tokens -------------------------");
 	check_SquarePresence(positions1,pos1);
-    printf("\n ------------------------- Blue tokens -------------------------");
+    printf("\n ------------------------ Blue  tokens ------------------------");
     check_SquarePresence(positions2,pos2);
+    create_GameTree();
 	return 1;
 }
 
@@ -110,8 +143,6 @@ void combinations_AllPositions(position arr[], int n, int r, int index, position
             printf("\n");
             printf("\n The points form a square!\n");
         }
-        // else
-        //     printf("\n The points does not form a square!");
         return;
     }
  
@@ -211,7 +242,77 @@ bool isSquare(side sides[], position positions[])
     }
     return false;
 }
- 
+
+//Construction of Game Tree
+void create_GameTree()
+{
+    vertexT *game_tree;
+    vertexT *start;
+    vertexT *temp;
+    int game_state[3][3] = {0,0,0,0,0,0,0,0,0};
+    start = (vertexT *)malloc(sizeof(vertexT));
+    game_tree = start;
+    memcpy(start->element.board_state, game_state, N * N * sizeof(int));
+    // for(int i=0; i<3; i++)
+    //     for(int j=0; j<3; j++)
+    //         printf("%d",start->element.board_state[i][j]);
+    start->edges = NULL;
+    start->next = NULL;
+
+}
+
+
+// This function on giving a matrix, will produce all its children
+void recursion_game(int element[N][N], int row, int col)
+{
+    if(row == 2 && col >2)
+    {
+        return;
+    }
+    int temp [N][N];
+    for(int i=0; i<N; i++)
+    {
+        for(int j=0; j<N; j++)
+        {
+            temp[i][j] = element[i][j];
+        }
+    }
+
+    if(element[row][col] == 0)
+    {
+        temp[row][col] = 3;
+    }
+    printf("------------\n");
+    for(int i=0; i<N; i++)
+    {
+        for(int j=0; j<N; j++)
+        {
+            printf("%d", temp[i][j]);
+        }
+    }
+    if(col > 2)
+    {
+        col = 0;
+        row = row+1;
+    }
+    col = col+1;
+    recursion_game(element,row,col);
+    //printf("++++++++ row = %d, col = %d\n", row,col);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
