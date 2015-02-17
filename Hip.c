@@ -55,7 +55,6 @@ typedef struct gameTree {
 // TODOS: use linked list representation of directed graphs to construct game tree 
 
 typedef enum { false, true } bool;
-// structure to define the state of the board in the game tree
 
 // TODOS: use linked list representation of directed graphs to construct game tree 
 // node of the graph = data+list(pointers) representing the children
@@ -66,6 +65,7 @@ void combinations_AllPositions(position arr[],int n,int r,int index,position dat
 int distance(position , position );
 bool isSquare(side [], position []);
 void create_GameTree();
+void recursion_game(int element[N][N], int row, int col);
 
 // Main Function
 
@@ -73,43 +73,25 @@ void create_GameTree();
 //	1. Function that takes the state of the board as input and returns whether it contains a square or not (given there are only 4 tokens on the board) ---- DONE
 //  2. Extend the Function isSquare to find squares (given many token on the board) ---- DONE
 //  3. Refine the code ---- DONE
-<<<<<<< HEAD
 //  4. Generalize the function to take two kinds of tokens ---- DONE
 //  5. Formulate a game tree
 //     * Function to generate all the children of a particular game state ---- DONE
 //     * Construct a directed graph using linked list (structure for vertex and edge ---- DONE)
-=======
-//  4. Generalize the function to take two kinds of tokens which represent two kinds of tokens ---- DONE
-//  5. Formulate a game tree
->>>>>>> 83de241d277c0302793fafeb556069f5137a4431
 
 int main()
 {
 	// 3x3 matrix to represent the board
-<<<<<<< HEAD
 	int board[3][3];
 	position positions1[9];
     position positions2[9];
+
 	// get a sample board state from the user (grid containing 0s and 1s, 1s representing the presents of a token)
 	// For now, take sample containing only tokens of only one kind
 	printf("\n Enter the Grid elements!\n\n 1--> To represent red tokens\n\n 2--> To represent blue tokens\n\n 3---> To represent blank position\n\n");
 	int pos1 =0;
     int pos2 =0;
+
 	for(int i=0; i<3; i++)
-=======
-	int board[6][6];
-	position positions1[36];
-    position positions2[36];
-
-	// get a sample board state from the user (grid containing 0s and 1s, 1s representing the presents of a token)
-	// For now, take sample containing only tokens of only one kind
-
-	printf("\n Enter the Grid elements!\n");
-	int pos1 =0;
-    int pos2 =0;
-
-	for(int i=0; i<6; i++)
->>>>>>> 83de241d277c0302793fafeb556069f5137a4431
 	{
 		for(int j=0; j<3; j++)
 		{
@@ -283,7 +265,6 @@ bool isSquare(side sides[], position positions[])
     }
     return false;
 }
-<<<<<<< HEAD
 
 //Construction of Game Tree
 void create_GameTree()
@@ -342,27 +323,3 @@ void recursion_game(int element[N][N], int row, int col)
     //printf("++++++++ row = %d, col = %d\n", row,col);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
- 
- //Construction of Game Tree
-void create_GameTree()
-{
-    
-}
->>>>>>> 83de241d277c0302793fafeb556069f5137a4431
