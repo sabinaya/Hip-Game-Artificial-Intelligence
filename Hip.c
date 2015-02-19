@@ -31,16 +31,19 @@ typedef struct
 
 // structure to define the state of the board in the game tree
 
-typedef struct 
-{
+typedef struct {
+
     int board_state[3][3];
     int heuristic_value;
+
 }graph_node;
 
 typedef struct vertexTag {
+
     graph_node element;
     struct edgeTag *edges;
     struct vertexTag *next;
+
 } vertexT;
 
 typedef struct edgeTag {
@@ -83,19 +86,19 @@ int main()
 	// 3x3 matrix to represent the board
 	int board[3][3];
 	position positions1[9];
-    position positions2[9];
+	position positions2[9];
 
 	// get a sample board state from the user (grid containing 0s and 1s, 1s representing the presents of a token)
 	// For now, take sample containing only tokens of only one kind
 	printf("\n Enter the Grid elements!\n\n 1--> To represent red tokens\n\n 2--> To represent blue tokens\n\n 3---> To represent blank position\n\n");
 	int pos1 =0;
-    int pos2 =0;
+    	int pos2 =0;
 
 	for(int i=0; i<3; i++)
 	{
 		for(int j=0; j<3; j++)
 		{
-            printf("\n Position (%d,%d):", i,j);
+            		printf("\n Position (%d,%d):", i,j);
 			scanf("%d",&board[i][j]);
 			if(board[i][j] == 1)
 			{
@@ -103,14 +106,14 @@ int main()
 				positions1[pos1].y = j; 
 				pos1++;
 			}
-            else if(board[i][j] == 2)
-            {
-                positions2[pos2].x = i;
-                positions2[pos2].y = j; 
-                pos2++;
-            }
+            		else if(board[i][j] == 2)
+            		{
+                		positions2[pos2].x = i;
+                		positions2[pos2].y = j; 
+                		pos2++;
+            		}
 		}	
-    }
+    	}
 	
     printf("\n ------------------------- Red tokens -------------------------");
 	check_SquarePresence(positions1,pos1);
