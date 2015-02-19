@@ -284,15 +284,15 @@ void create_GameTree()
     start->edges = NULL;
     start->next = NULL;
     end = NULL;
-        end = recursion_game(game_state,0,0,start); // -----------------------DANGLING POINTER (END)
-        for (int i = 0; i < 3; ++i)
+    end = recursion_game(game_state,0,0,start); // -----------------------DANGLING POINTER (END)
+    for (int i = 0; i < 3; ++i)
+    {
+        for (int j = 0; j < 3; ++j)
         {
-            for (int j = 0; j < 3; ++j)
-            {
-                printf("%d", end->element.board_state[i][j]); 
-            }
-            printf("\n");
+            printf("%d", end->element.board_state[i][j]); 
         }
+        printf("\n");
+    }
 
     vertexT *temp;
     temp = game_tree;
@@ -316,10 +316,8 @@ void create_GameTree()
 }
 
 
-// This function on giving a matrix, will produce all its children
-vertexT * recursion_game(int element[N][N], int row, int col, vertexT *start)
+vertexT * getStartPointer(int element[N][N], int row, int col, vertexT *start)
 {
-    // ----------------------------- existance of pointer but becomes dangling in the calling function
     if(row == 2 && col >2)
     {
         for(int i=0; i<N; i++)
@@ -331,6 +329,15 @@ vertexT * recursion_game(int element[N][N], int row, int col, vertexT *start)
         }
         return start; // ----------------------------- start not returning proper pointer to the end of the list
     }
+    return start;
+}
+
+
+// This function on giving a matrix, will produce all its children
+vertexT * recursion_game(int element[N][N], int row, int col, vertexT *start)
+{
+    //print getStartPointer(int element[N][N], int row, int col, vertexT *start);
+    
     int temp [N][N];
     for(int i=0; i<N; i++)
     {
@@ -353,6 +360,7 @@ vertexT * recursion_game(int element[N][N], int row, int col, vertexT *start)
     }
     col = col+1;
     recursion_game(element,row,col,start);
+    return 0;
 }
 
 vertexT * insert_States(vertexT *node, int element[N][N])
