@@ -73,14 +73,14 @@ vertexT * insert_States(vertexT *, int element[N][N]);
 
 // Main Function
 
-// TODOS:
-//	1. Function that takes the state of the board as input and returns whether it contains a square or not (given there are only 4 tokens on the board) ---- DONE
-//  2. Extend the Function isSquare to find squares (given many token on the board) ---- DONE
-//  3. Refine the code ---- DONE
-//  4. Generalize the function to take two kinds of tokens ---- DONE
-//  5. Formulate a game tree
-//     * Function to generate all the children of a particular game state ---- DONE
-//     * Construct a directed graph using linked list (structure for vertex and edge ---- DONE)
+    // TODOS:
+    //	1. Function that takes the state of the board as input and returns whether it contains a square or not (given there are only 4 tokens on the board) ---- DONE
+    //  2. Extend the Function isSquare to find squares (given many token on the board) ---- DONE
+    //  3. Refine the code ---- DONE
+    //  4. Generalize the function to take two kinds of tokens ---- DONE
+    //  5. Formulate a game tree
+    //     * Function to generate all the children of a particular game state ---- DONE
+    //     * Construct a directed graph using linked list (structure for vertex and edge ---- DONE)
 
 int main()
 {
@@ -280,14 +280,11 @@ void create_GameTree()
     start = (vertexT *)malloc(sizeof(vertexT));
     game_tree = start;
     memcpy(start->element.board_state, game_state, N * N * sizeof(int));
-    // for(int i=0; i<3; i++)
-    //     for(int j=0; j<3; j++)
-    //         printf("%d",start->element.board_state[i][j]);
+
     start->edges = NULL;
     start->next = NULL;
     end = NULL;
         end = recursion_game(game_state,0,0,start); // -----------------------DANGLING POINTER (END)
-        printf("helllloooooo----------printing end\n");
         for (int i = 0; i < 3; ++i)
         {
             for (int j = 0; j < 3; ++j)
@@ -297,7 +294,6 @@ void create_GameTree()
             printf("\n");
         }
 
-    printf("helllloooooo-----------temp\n");
     vertexT *temp;
     temp = game_tree;
     while(temp != end)
@@ -357,7 +353,6 @@ vertexT * recursion_game(int element[N][N], int row, int col, vertexT *start)
     }
     col = col+1;
     recursion_game(element,row,col,start);
-    //printf("++++++++ row = %d, col = %d\n", row,col);
 }
 
 vertexT * insert_States(vertexT *node, int element[N][N])
@@ -365,14 +360,6 @@ vertexT * insert_States(vertexT *node, int element[N][N])
     vertexT *temp;
     temp = (vertexT *)malloc(sizeof(vertexT));
     memcpy(temp->element.board_state, element, N * N * sizeof(int));
-    // printf("\n---------------------------------------during insertion -----------------------");
-    // for(int i=0; i<N; i++)
-    // {
-    //     for(int j=0; j<N; j++)
-    //     {
-    //         printf("%d", temp->element.board_state[i][j]);
-    //     }
-    // }
     temp->edges = NULL;
     temp->next = NULL;
     node->next = temp;
