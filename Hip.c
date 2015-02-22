@@ -33,7 +33,7 @@ typedef struct
 
 typedef struct {
 
-    int board_state[2][2];
+    int board_state[N][N];
     int heuristic_value;
 
 }graph_node;
@@ -84,9 +84,9 @@ void recursion_game(int element[N][N], int row, int col, vertexT **,int );
 int main()
 {
 	// 3x3 matrix to represent the board
-	int board[2][2];
-	position positions1[4];
-	position positions2[4];
+	int board[N][N];
+	position positions1[N*N];
+	position positions2[N*N];
 
 	// get a sample board state from the user (grid containing 0s and 1s, 1s representing the presents of a token)
 	// For now, take sample containing only tokens of only one kind
@@ -276,7 +276,7 @@ void create_GameTree()
     vertexT *game_tree;
     vertexT *start;
     vertexT *end;
-    int game_state[2][2] = {0,0,0,0};
+    int game_state[N][N] = {0,0,0,0};
     end = (vertexT *)malloc(sizeof(vertexT));
     game_tree = end;
     memcpy(end->element.board_state, game_state, N * N * sizeof(int));
