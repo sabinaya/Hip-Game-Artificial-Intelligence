@@ -14,7 +14,7 @@
 #include<math.h>
 #include<stdlib.h>
 #include<string.h>
-#define N 3
+#define N 2
 
 // structure to store the positions of the tokens on the board
 typedef struct
@@ -33,7 +33,7 @@ typedef struct
 
 typedef struct {
 
-    int board_state[3][3];
+    int board_state[2][2];
     int heuristic_value;
 
 }graph_node;
@@ -53,14 +53,9 @@ typedef struct edgeTag {
 
 typedef struct gameTree {
     vertexT *vertices;
-} gameTree;
-
-// TODOS: use linked list representation of directed graphs to construct game tree 
+} gameTree; 
 
 typedef enum { false, true } bool;
-
-// TODOS: use linked list representation of directed graphs to construct game tree 
-// node of the graph = data+list(pointers) representing the children
 
 // Declaration of Functions
 void check_SquarePresence(position [],int );
@@ -69,7 +64,6 @@ int distance(position , position );
 bool isSquare(side [], position []);
 void create_GameTree();
 void recursion_game(int element[N][N], int row, int col, vertexT **,int );
-//vertexT ** insert_States(vertexT **, int element[N][N]);
 
 // Main Function
 
@@ -79,15 +73,20 @@ void recursion_game(int element[N][N], int row, int col, vertexT **,int );
     //  3. Refine the code ---- DONE
     //  4. Generalize the function to take two kinds of tokens ---- DONE
     //  5. Formulate a game tree
-    //     * Function to generate all the children of a particular game state ---- DONE
-    //     * Construct a directed graph using linked list (structure for vertex and edge ---- DONE)
+    //      * Function to generate all the children of a particular game state ---- DONE
+    //      * Structure for vertex and edge ---- DONE
+    //      * Construct a directed graph using linked list
+    //          -> Include Count of the node (currently hueristic function has count which should be changed)
+    //          -> Generalize the count to stop the loop at LINE - 286
+    //          -> Include edges
+    //          -> Parse the tree and calculate the heuristic function of each node on the tree
 
 int main()
 {
 	// 3x3 matrix to represent the board
-	int board[3][3];
-	position positions1[9];
-	position positions2[9];
+	int board[2][2];
+	position positions1[4];
+	position positions2[4];
 
 	// get a sample board state from the user (grid containing 0s and 1s, 1s representing the presents of a token)
 	// For now, take sample containing only tokens of only one kind
@@ -95,9 +94,9 @@ int main()
 	int pos1 =0;
     	int pos2 =0;
 
-	for(int i=0; i<3; i++)
+	for(int i=0; i<N; i++)
 	{
-		for(int j=0; j<3; j++)
+		for(int j=0; j<N; j++)
 		{
             		printf("\n Position (%d,%d):", i,j);
 			scanf("%d",&board[i][j]);
@@ -114,7 +113,7 @@ int main()
                 		pos2++;
             		}
 		}	
-    	}
+    }
 	
     printf("\n ------------------------- Red tokens -------------------------\n");
 	check_SquarePresence(positions1,pos1);
@@ -277,36 +276,29 @@ void create_GameTree()
     vertexT *game_tree;
     vertexT *start;
     vertexT *end;
-    int game_state[3][3] = {0,0,0,0,0,0,0,0,0};
+    int game_state[2][2] = {0,0,0,0};
     end = (vertexT *)malloc(sizeof(vertexT));
     game_tree = end;
     memcpy(end->element.board_state, game_state, N * N * sizeof(int));
     end->edges = NULL;
     end->next = NULL;
     start = game_tree;
-    while(game_tree != NULL)
+    while(start->element.heuristic_value <= 41)
     {
-        recursion_game(end->element.board_state,0,0,&end,0); // -----------------------DANGLING POINTER (END)
+        recursion_game(start->element.board_state,0,0,&end,0);
         start = start->next;
     }
-    // for (int i = 0; i < 3; ++i)
-    // {
-    //     for (int j = 0; j < 3; ++j)
-    //     {
-    //         printf("%d", start->element.board_state[i][j]); 
-    //     }
-    //     printf("\n");
-    // }
 
     vertexT *temp;
     temp = game_tree;
+    printf("\n\n Printing all the vertices\n");
     while(temp != NULL)
     {
-        printf("%d\n", temp->element.heuristic_value);
+        printf("Count: %d\n", temp->element.heuristic_value);
         printf("\n");
-        for (int i = 0; i < 3; ++i)
+        for (int i = 0; i < N; ++i)
         {
-            for (int j = 0; j < 3; ++j)
+            for (int j = 0; j < N; ++j)
             {
                 printf("%d", temp->element.board_state[i][j]);
             }
@@ -320,22 +312,12 @@ void create_GameTree()
 
 }
 
-// This function on giving a matrix, will produce all its children
+// This function on giving a matrix, will produce all its children and insert them into the vertices list
 void recursion_game(int element[N][N], int row, int col, vertexT **start, int count)
 {
-    if(row == 2 && col >2)
+    if(row ==(N-1) && col >(N-1))
     {
-        // printf("-------------------++++++++--------------------\n");
-        // printf("hello ---------------- %d\n",count++);
-        // for(int i=0; i<N; i++)
-        // {
-        //     for(int j=0; j<N; j++)
-        //     {
-        //         printf("%d", (*start)->element.board_state[i][j]);
-        //         printf("\n\n\n");
-        //     }
-        // }
-        return; // ----------------------------- start not returning proper pointer to the end of the list
+        return;
     }
     int temp [N][N];
     for(int i=0; i<N; i++)
@@ -349,27 +331,19 @@ void recursion_game(int element[N][N], int row, int col, vertexT **start, int co
     if(element[row][col] == 0)
     {
         temp[row][col] = 3;
+        
+        // Inserting the matrix on to the list of vertices once the matrix is changed
+        vertexT *t;
+        t = (vertexT *)malloc(sizeof(vertexT));
+        memcpy(t->element.board_state, temp, N * N * sizeof(int));
+        count = (*start)->element.heuristic_value+1;
+        t->element.heuristic_value = count;
+        t->edges = NULL;
+        t->next = NULL;
+        (*start)->next = t;
+        (*start) = t;
     }
-    
-    //start = insert_States(start,temp);
-    vertexT *t;
-    t = (vertexT *)malloc(sizeof(vertexT));
-    memcpy(t->element.board_state, temp, N * N * sizeof(int));
-    count = (*start)->element.heuristic_value+1;
-    t->element.heuristic_value = count;
-    t->edges = NULL;
-    t->next = NULL;
-    (*start)->next = t;
-    (*start) = t;
-    // for(int i=0; i<N; i++)
-    // {
-    //     for(int j=0; j<N; j++)
-    //     {
-    //         printf("%d", (*start)->element.board_state[i][j]);
-    //     }
-    //     printf("\n\n\n");
-    // }
-    if(col > 2)
+    if(col > (N-1))
     {
         col = 0;
         row = row+1;
@@ -378,19 +352,6 @@ void recursion_game(int element[N][N], int row, int col, vertexT **start, int co
     recursion_game(element,row,col,start,count);
     return;
 }
-
-// vertexT ** insert_States(vertexT **node, int element[N][N])
-// {
-//     vertexT *temp;
-//     temp = (vertexT *)malloc(sizeof(vertexT));
-//     memcpy(temp->element.board_state, element, N * N * sizeof(int));
-//     temp->edges = NULL;
-//     temp->next = NULL;
-//     (*node)->next = temp;
-//     (*node) = (*node)->next;
-//     return(&node);
-// }
-
 
 
 
