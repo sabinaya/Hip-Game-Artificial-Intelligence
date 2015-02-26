@@ -1,19 +1,14 @@
 /** 
-
 	Hip Game
-	Author:
+	Author: Abinaya Saravanan
 	LICENSE: MIT License
-
  */
-
-
-/** Function_name = what it does */
-
 
 #include<stdio.h>
 #include<math.h>
 #include<stdlib.h>
 #include<string.h>
+#include<conio.h>
 #define N 2
 
 // structure to store the positions of the tokens on the board
@@ -30,7 +25,6 @@ typedef struct
 }side;
 
 // structure to define the state of the board in the game tree
-
 typedef struct {
 
     int board_state[N][N];
@@ -63,7 +57,7 @@ void combinations_AllPositions(position arr[],int n,int r,int index,position dat
 int distance(position , position );
 bool isSquare(side [], position []);
 void create_GameTree();
-void recursion_game(int element[N][N], int row, int col, vertexT **,int );
+void recursion_game(vertexT **, int row, int col, vertexT **,int ,edgeT *);
 
 // Main Function
 
@@ -78,12 +72,14 @@ void recursion_game(int element[N][N], int row, int col, vertexT **,int );
     //      * Construct a directed graph using linked list
     //          -> Include Count of the node (currently hueristic function has count which should be changed)
     //          -> Generalize the count to stop the loop at LINE - 286
-    //          -> Include edges
+    //          -> Include edges ---- DONE
     //          -> Parse the tree and calculate the heuristic function of each node on the tree
 
 int main()
 {
 	// 3x3 matrix to represent the board
+	int i;
+	int j;
 	int board[N][N];
 	position positions1[N*N];
 	position positions2[N*N];
@@ -94,11 +90,11 @@ int main()
 	int pos1 =0;
     	int pos2 =0;
 
-	for(int i=0; i<N; i++)
+	for(i=0; i<N; i++)
 	{
-		for(int j=0; j<N; j++)
+		for(j=0; j<N; j++)
 		{
-            		printf("\n Position (%d,%d):", i,j);
+            printf("\n Position (%d,%d):", i,j);
 			scanf("%d",&board[i][j]);
 			if(board[i][j] == 1)
 			{
@@ -106,12 +102,12 @@ int main()
 				positions1[pos1].y = j; 
 				pos1++;
 			}
-            		else if(board[i][j] == 2)
-            		{
-                		positions2[pos2].x = i;
-                		positions2[pos2].y = j; 
-                		pos2++;
-            		}
+            else if(board[i][j] == 2)
+            {
+             	positions2[pos2].x = i;
+                positions2[pos2].y = j; 
+                pos2++;
+            }
 		}	
     }
 	
@@ -120,6 +116,7 @@ int main()
     printf("\n ------------------------ Blue  tokens ------------------------\n");
     check_SquarePresence(positions2,pos2);
     create_GameTree();
+    getch();
 	return 1;
 }
 
@@ -141,17 +138,16 @@ void check_SquarePresence(position positions[],int pos_size)
    data[] ---> Temporary array to store current combination
    i      ---> index of current element in arr[]     
 */
-
-
 void combinations_AllPositions(position arr[], int n, int r, int index, position data[], int i)
 {
+	int j;
     // Current combination is ready ---> call distance function and store the distance
     if (index == r)
     {
         side sides[100];
         int pos = 0;
         int curr = 0;
-        for(int j=0; j<r; j++)
+        for(j=0; j<r; j++)
         {
             if(curr != j)
             {
@@ -164,7 +160,7 @@ void combinations_AllPositions(position arr[], int n, int r, int index, position
         bool result = isSquare(sides,data);
         if(result == true)
         {
-            for (int j=0; j<r; j++)
+            for (j=0; j<r; j++)
             printf("\n(%d,%d) ",data[j].x, data[j].y);
             printf("\n");
             printf("\n The points form a square!\n");
@@ -194,6 +190,8 @@ int distance(position point1, position point2)
 // Function to check if the given four points form a square
 bool isSquare(side sides[], position positions[])
 {
+	int a;
+	int b;
 	int equalSide1 = -1;
 	int equalSide2 = -1;
 	int unequalSide = -1;
@@ -241,10 +239,10 @@ bool isSquare(side sides[], position positions[])
             int diagonal = opposing;
             int adjacent = sides[equalSide1].distance;
             int is_Square= true;
-            for (int a = 0; a < 4; a++) {
+            for (a = 0; a < 4; a++) {
                 int diagonalCount = 0;
                 int adjacentCount = 0;                
-                for (int b = 0; b < 4; b++) {
+                for (b = 0; b < 4; b++) {
                     if (a != b) {
                         int dist = distance(positions[a], positions[b]);
                         if (dist == diagonal) {
@@ -273,9 +271,13 @@ bool isSquare(side sides[], position positions[])
 void create_GameTree()
 {
     int count = 0;
+    int i;
+    int j;
     vertexT *game_tree;
     vertexT *start;
     vertexT *end;
+    edgeT *ed;
+    ed = NULL;
     int game_state[N][N] = {0,0,0,0};
     end = (vertexT *)malloc(sizeof(vertexT));
     game_tree = end;
@@ -283,52 +285,74 @@ void create_GameTree()
     end->edges = NULL;
     end->next = NULL;
     start = game_tree;
-    while(start->element.heuristic_value <= 41)
+    while(start->element.heuristic_value != 41)
     {
-        recursion_game(start->element.board_state,0,0,&end,0);
+    	recursion_game(&start,0,0,&end,0,ed);
         start = start->next;
     }
 
-    vertexT *temp;
+    // Printing the vertices and edges
+	vertexT *temp;
     temp = game_tree;
+    edgeT *edgeList;
     printf("\n\n Printing all the vertices\n");
     while(temp != NULL)
     {
-        printf("Count: %d\n", temp->element.heuristic_value);
+        printf("\nCount: %d\n", temp->element.heuristic_value);
         printf("\n");
-        for (int i = 0; i < N; ++i)
+        for (i = 0; i < N; ++i)
         {
-            for (int j = 0; j < N; ++j)
+            for (j = 0; j < N; ++j)
             {
                 printf("%d", temp->element.board_state[i][j]);
             }
             printf("\n");
         }
         printf("\n\n");
+        edgeList = temp->edges;
+        printf("\nEdges\n");
+        while(edgeList != NULL)
+        {       	
+        	for(i = 0 ; i < N; i++)
+            {
+                for(j = 0; j < N; j++)
+                {
+                	printf("%d", edgeList->connectsTo->element.board_state[i][j]);
+                }
+            printf("\n");
+            }
+        	edgeList = edgeList->next;
+        	printf("\n\n");
+        }
         temp = temp->next;
     }
-
     return;
-
 }
 
 // This function on giving a matrix, will produce all its children and insert them into the vertices list
-void recursion_game(int element[N][N], int row, int col, vertexT **start, int count)
+void recursion_game(vertexT **start, int row, int col, vertexT **end, int count,edgeT *ed)
 {
+	int i;
+	int j;
+	int flag = 0;
+	if(count ==0)
+	{
+		flag = 1;
+	}
     if(row ==(N-1) && col >(N-1))
     {
         return;
     }
     int temp [N][N];
-    for(int i=0; i<N; i++)
+    for(i=0; i<N; i++)
     {
-        for(int j=0; j<N; j++)
+        for(j=0; j<N; j++)
         {
-            temp[i][j] = element[i][j];
+            temp[i][j] = (*start)->element.board_state[i][j];
         }
     }
 
-    if(element[row][col] == 0)
+    if((*start)->element.board_state[row][col] == 0)
     {
         temp[row][col] = 3;
         
@@ -336,26 +360,37 @@ void recursion_game(int element[N][N], int row, int col, vertexT **start, int co
         vertexT *t;
         t = (vertexT *)malloc(sizeof(vertexT));
         memcpy(t->element.board_state, temp, N * N * sizeof(int));
-        count = (*start)->element.heuristic_value+1;
+        count = (*end)->element.heuristic_value+1;
         t->element.heuristic_value = count;
         t->edges = NULL;
         t->next = NULL;
-        (*start)->next = t;
-        (*start) = t;
-    }
+        (*end)->next = t;
+        (*end) = t;
+        
+        // Adding edges to the parent node
+        edgeT *edge;
+        edge = (edgeT *)malloc(sizeof(edgeT));
+        edge->connectsTo = (*end);
+        edge->next = NULL;
+        if(flag == 1)
+        {
+        	(*start)->edges = edge;
+        	printf("\nInside count==0");
+        }
+        else
+        {
+        	ed->next = edge;
+        	printf("\nInside else");
+        }
+        ed = edge;
+	}
+	
     if(col > (N-1))
     {
         col = 0;
         row = row+1;
     }
     col = col+1;
-    recursion_game(element,row,col,start,count);
+    recursion_game(start,row,col,end,count,ed);
     return;
 }
-
-
-
-
-
-
-
