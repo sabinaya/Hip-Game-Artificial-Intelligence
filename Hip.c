@@ -8,7 +8,6 @@
 #include<math.h>
 #include<stdlib.h>
 #include<string.h>
-#include<conio.h>
 #define N 2
 
 // structure to store the positions of the tokens on the board
@@ -116,7 +115,6 @@ int main()
     printf("\n ------------------------ Blue  tokens ------------------------\n");
     check_SquarePresence(positions2,pos2);
     create_GameTree();
-    getch();
 	return 1;
 }
 
@@ -375,12 +373,10 @@ void recursion_game(vertexT **start, int row, int col, vertexT **end, int count,
         if(flag == 1)
         {
         	(*start)->edges = edge;
-        	printf("\nInside count==0");
         }
         else
         {
         	ed->next = edge;
-        	printf("\nInside else");
         }
         ed = edge;
 	}
