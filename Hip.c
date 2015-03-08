@@ -98,7 +98,7 @@ void create_GameTree(int board[N][N], int player)
     }
 
     // Free the memory after copying the values
-    //free(free_positions);
+    free(free_positions);
 
 
     // ----------------------------------------- Sample printing for verification ---------------------------------------------
@@ -260,8 +260,8 @@ int max(int possible_board[N][N], int player)
     }
 
     // Free the possible positions array
-    // free(possible_board_positions);
-    // free(free_positions);
+    free(possible_board_positions);
+    free(free_positions);
 }
 
 
@@ -358,8 +358,8 @@ int min(int possible_board[N][N], int player)
     }
 
     // Free the possible positions array
-    // free(possible_board_positions);
-    // free(free_positions);
+    free(possible_board_positions);
+    free(free_positions);
 }
 // Function to take the current board state and and the player and populates the positions of the tokens
 position * populate_free_positions(int board[N][N], int player)
