@@ -1,151 +1,425 @@
-/** 
-	Hip Game
-	Author: Abinaya Saravanan
-	LICENSE: MIT License
- */
-
 #include<stdio.h>
 #include<math.h>
 #include<stdlib.h>
 #include<string.h>
-#define N 2
+#define N 4
 
-// structure to store the positions of the tokens on the board
 typedef struct
 {
 	int x,y;
 }position;
 
-//structure to store distances between points
 typedef struct
 {
 	position p1,p2;
     int distance;
 }side;
 
-// structure to define the state of the board in the game tree
-typedef struct {
-
-    int board_state[N][N];
-    int heuristic_value;
-
-}graph_node;
-
-typedef struct vertexTag {
-
-    graph_node element;
-    struct edgeTag *edges;
-    struct vertexTag *next;
-
-} vertexT;
-
-typedef struct edgeTag {
-    struct vertexTag *connectsTo;
-    struct edgeTag *next;
-} edgeT;
-
-typedef struct gameTree {
-    vertexT *vertices;
-} gameTree; 
-
 typedef enum { false, true } bool;
 
-// Declaration of Functions
-void check_SquarePresence(position [],int );
-void combinations_AllPositions(position arr[],int n,int r,int index,position data[],int i);
-int distance(position , position );
+position * get_free_positions(int [N][N],int );
+int num_free_positions(int [N][N]);
+position * populate_free_positions(int [N][N], int );
+int combinations_AllPositions(position [], int , int , int , position [], int ,int flag);
 bool isSquare(side [], position []);
-void create_GameTree();
-void recursion_game(vertexT **, int row, int col, vertexT **,int ,edgeT *);
+int distance(position , position );
+void create_GameTree(int [N][N],int );
+int max(int [N][N], int );
+int min(int [N][N], int );
 
-// Main Function
-
-    // TODOS:
-    //	1. Function that takes the state of the board as input and returns whether it contains a square or not (given there are only 4 tokens on the board) ---- DONE
-    //  2. Extend the Function isSquare to find squares (given many token on the board) ---- DONE
-    //  3. Refine the code ---- DONE
-    //  4. Generalize the function to take two kinds of tokens ---- DONE
-    //  5. Formulate a game tree
-    //      * Function to generate all the children of a particular game state ---- DONE
-    //      * Structure for vertex and edge ---- DONE
-    //      * Construct a directed graph using linked list
-    //          -> Include Count of the node (currently hueristic function has count which should be changed)
-    //          -> Generalize the count to stop the loop at LINE - 286
-    //          -> Include edges ---- DONE
-    //          -> Parse the tree and calculate the heuristic function of each node on the tree
-
+// Main function
+// TODOS : 1. Implement minimax algorithm -----DONE
+//         2. Optimize the code
+//         3. Implement alpha-beta pruning
 int main()
 {
-	// 3x3 matrix to represent the board
-	int i;
-	int j;
 	int board[N][N];
-	position positions1[N*N];
-	position positions2[N*N];
+	int player;
 
-	// get a sample board state from the user (grid containing 0s and 1s, 1s representing the presents of a token)
-	// For now, take sample containing only tokens of only one kind
+	printf("\nEnter the current Player.... 1. Red     2. Blue");
+	scanf("%d",&player);
+
 	printf("\n Enter the Grid elements!\n\n 1--> To represent red tokens\n\n 2--> To represent blue tokens\n\n 3---> To represent blank position\n\n");
-	int pos1 =0;
-    	int pos2 =0;
 
-	for(i=0; i<N; i++)
+	for(int i=0; i<N; i++)
 	{
-		for(j=0; j<N; j++)
+		for(int j=0; j<N; j++)
 		{
             printf("\n Position (%d,%d):", i,j);
 			scanf("%d",&board[i][j]);
-			if(board[i][j] == 1)
-			{
-				positions1[pos1].x = i;
-				positions1[pos1].y = j; 
-				pos1++;
-			}
-            else if(board[i][j] == 2)
-            {
-             	positions2[pos2].x = i;
-                positions2[pos2].y = j; 
-                pos2++;
-            }
 		}	
     }
+    if(num_free_positions(board))
+    {
+        create_GameTree(board,player);
+    }
+    else
+    {
+        printf("\nNo next possible boards available");
+    }
+    return 1;
+}
+
+// Function to find all the next possible states and return if the game ends or not
+void create_GameTree(int board[N][N], int player)
+{
+    int possible_board[N][N];
+    int best_child[N][N];
+	position *free_positions;
+    position empty_positions[N*N];
+    int free_pos_size;
+    int pos = 0;  // To track the size of the positions array 
+    int previous = -5;
 	
-    printf("\n ------------------------- Red tokens -------------------------\n");
-	check_SquarePresence(positions1,pos1);
-    printf("\n ------------------------ Blue  tokens ------------------------\n");
-    check_SquarePresence(positions2,pos2);
-    create_GameTree();
-	return 1;
-}
+    // ----------------------------------------- Sample printing for verification ---------------------------------------------
+    printf("\nInitial Matrix\n");
+    for(int i=0;i<N;i++)
+    {
+    	for(int j=0;j<N;j++)
+    	{
+    		printf("%d",board[i][j]);
+    	}
+    	printf("\n");
+    }	
+    // ------------------------------------------------------------------------------------------------------------------------
 
-void check_SquarePresence(position positions[],int pos_size)
-{
-    // A temporary array to store all combination one by one
-    position data[pos_size];
     
-	// taking all combinations of the positions of size 4
-	combinations_AllPositions(positions, pos_size, 4, 0, data, 0);
-	return;
+    // Populating free positions to substitute values and find all the next possible positions
+    free_positions = populate_free_positions(board,0);
+    free_pos_size = (free_positions + 0)->x;      // Size of the free positions array
+
+
+    // Copying the array values into a seperate array (Empty positios array)
+    for(int i = 1; i <= free_pos_size; i++)
+    {
+        empty_positions[pos].x = (free_positions + i)->x;
+        empty_positions[pos].y = (free_positions + i)->y;
+        pos++;
+    }
+
+    // Free the memory after copying the values
+    //free(free_positions);
+
+
+    // ----------------------------------------- Sample printing for verification ---------------------------------------------
+    printf("\nPossible position board ----- free positions\n");
+
+    for (int i = 0; i < free_pos_size; i++ )
+    {
+        printf("\n%d,%d ---- ",empty_positions[i].x,empty_positions[i].y);
+    }
+
+    // ------------------------------------------------------------------------------------------------------------------------
+    
+
+    // Iterating through the free positions to evaluate all the next possible positions
+    for (int i = 0; i < free_pos_size; i++ )
+    {
+        // Refreshing the board to get ready for the next possible position
+        for(int r=0; r<N; r++)
+        {
+            for(int s=0; s<N; s++)
+            {
+                possible_board[r][s] = board[r][s];
+            }
+        }   
+
+        // Replacing each empty board position with the player token
+        possible_board[empty_positions[i].x][empty_positions[i].y] = player;
+
+
+        // ----------------------------------------- Sample printing for verification ---------------------------------------------
+        printf("\nPossible boards\n");
+        for(int r=0; r<N; r++)
+        {
+            for(int s=0; s<N; s++)
+            {
+                printf("%d", possible_board[r][s]);
+            }
+            printf("\n");
+        }  
+        // ------------------------------------------------------------------------------------------------------------------------
+
+        int current = min(possible_board,player);
+        printf("\nChild Score: %d",current);
+
+        if(current > previous)
+        {
+            for(int r=0; r<N; r++)
+            {
+                for(int s=0; s<N; s++)
+                {
+                    best_child[r][s] = possible_board[r][s];
+                }
+            }
+            previous = current;
+        }
+    }
+    printf("\nThe final best child is:\n");
+    for(int r=0; r<N; r++)
+    {
+        for(int s=0; s<N; s++)
+        {
+            printf("%d",best_child[r][s]);
+        }
+        printf("\n");
+    }
+    return;
+}	
+
+
+int max(int possible_board[N][N], int player)
+{
+    position *possible_board_positions;
+    position player_positions[N*N];
+    int board[N][N];
+
+    position *free_positions;
+    int free_pos_size;
+    position empty_positions[N*N];
+    // To hold the size of the position array
+    int pos = 0;
+    int flag;
+    int best = -5;
+
+    // Populate the player token positions to see if any combination of 4 tokens form a square
+    possible_board_positions = populate_free_positions(possible_board,player);
+
+    // Copying the array values into a seperate array (Player positios array)
+    for(int k = 1; k <= (possible_board_positions + 0)->x; k++)
+    {
+        player_positions[pos].x = (possible_board_positions + k)->x;
+        player_positions[pos].y = (possible_board_positions + k)->y;
+        pos++;
+    }
+
+    // Declare an empty array --- for storing the four positions in combinations_AllPositions()
+    position data[(possible_board_positions + 0)->x];
+
+    // Call the function which takes a board as parameter to find whether the player tokens form a square
+    flag = combinations_AllPositions(player_positions, (possible_board_positions + 0)->x, 4, 0, data, 0, 0);
+
+    // Displaying the result of the current board state
+    if(flag == 1 && player == 1)
+        return -1;
+    else if(flag == 1 && player == 2)
+        return 1;
+    else if (flag == 0 && num_free_positions(possible_board) == 0)
+        return 0;
+    else
+    {
+        free_positions = populate_free_positions(possible_board,0);
+        free_pos_size = (free_positions + 0)->x;      // Size of the free positions array
+        pos = 0;
+
+        // ----------------------------------------- Sample printing for verification ---------------------------------------------
+
+        // Copying the array values into a seperate array (Empty positios array)
+        printf("\n---------------Inside max ------------ empty positions");
+        for(int i = 1; i <= free_pos_size; i++)
+        {
+            empty_positions[pos].x = (free_positions + i)->x;
+            empty_positions[pos].y = (free_positions + i)->y;
+            printf("\n%d,%d", empty_positions[pos].x,empty_positions[pos].y);
+            pos++;
+        }
+        // ------------------------------------------------------------------------------------------------------------------------
+
+        for(int i=0; i<pos; i++)
+        {
+            // Refreshing the board to get ready for the next possible position
+            for(int r=0; r<N; r++)
+            {
+                for(int s=0; s<N; s++)
+                {
+                    board[r][s] = possible_board[r][s];
+                }
+            }   
+
+            // Replacing each empty board position with the player token
+            board[empty_positions[i].x][empty_positions[i].y] = 2;
+
+            // ----------------------------------------- Sample printing for verification ---------------------------------------------
+
+            printf("\nBoard ---------\n");
+            for(int r=0; r<N; r++)
+            {
+                for(int s=0; s<N; s++)
+                {
+                    printf("%d",board[r][s]);
+                }
+                printf("\n");
+            }
+            // ------------------------------------------------------------------------------------------------------------------------
+
+            int move = min(board,2);
+            if(move > best)
+                best = move;
+        }
+        return best;
+    }
+
+    // Free the possible positions array
+    // free(possible_board_positions);
+    // free(free_positions);
 }
 
-/*** 
-   arr[]  ---> Input Array
-   n      ---> Size of input array
-   r      ---> Size of a combination to be printed
-   index  ---> Current index in data[]
-   data[] ---> Temporary array to store current combination
-   i      ---> index of current element in arr[]     
-*/
-void combinations_AllPositions(position arr[], int n, int r, int index, position data[], int i)
+
+int min(int possible_board[N][N], int player)
 {
-	int j;
+
+    position *possible_board_positions;
+    position player_positions[N*N];
+    int board[N][N];
+
+    position *free_positions;
+    int free_pos_size;
+    position empty_positions[N*N];
+    // To hold the size of the position array
+    int pos = 0;
+    int flag;
+    int best = 10000;
+
+    // Populate the player token positions to see if any combination of 4 tokens form a square
+    possible_board_positions = populate_free_positions(possible_board,player);
+
+    // Copying the array values into a seperate array (Player positios array)
+    for(int k = 1; k <= (possible_board_positions + 0)->x; k++)
+    {
+        player_positions[pos].x = (possible_board_positions + k)->x;
+        player_positions[pos].y = (possible_board_positions + k)->y;
+        pos++;
+    }
+
+    // Declare an empty array --- for storing the four positions in combinations_AllPositions()
+    position data[(possible_board_positions + 0)->x];
+
+    // Call the function which takes a board as parameter to find whether the player tokens form a square
+    flag = combinations_AllPositions(player_positions, (possible_board_positions + 0)->x, 4, 0, data, 0, 0);
+
+    // Displaying the result of the current board state
+    if(flag == 1 && player == 1)
+        return -1;
+    else if(flag == 1 && player == 2)
+        return 1;
+    else if (flag == 0 && num_free_positions(possible_board) == 0)
+        return 0;
+    else
+    {
+        free_positions = populate_free_positions(possible_board,0);
+        free_pos_size = (free_positions + 0)->x;      // Size of the free positions array
+        pos = 0;
+
+        // ----------------------------------------- Sample printing for verification ---------------------------------------------
+
+        // Copying the array values into a seperate array (Empty positios array)
+        printf("\n---------------Inside min ------------ empty positions");
+        for(int i = 1; i <= free_pos_size; i++)
+        {
+            empty_positions[pos].x = (free_positions + i)->x;
+            empty_positions[pos].y = (free_positions + i)->y;
+            printf("\n%d,%d", empty_positions[pos].x,empty_positions[pos].y);
+            pos++;
+        }
+        // ------------------------------------------------------------------------------------------------------------------------
+
+
+        for(int i=0; i<pos; i++)
+        {
+            // Refreshing the board to get ready for the next possible position
+            for(int r=0; r<N; r++)
+            {
+                for(int s=0; s<N; s++)
+                {
+                    board[r][s] = possible_board[r][s];
+                }
+            }   
+
+            // Replacing each empty board position with the player token
+            board[empty_positions[i].x][empty_positions[i].y] = 1;
+
+            // ----------------------------------------- Sample printing for verification ---------------------------------------------
+            printf("\nBoard ---------\n");
+            for(int r=0; r<N; r++)
+            {
+                for(int s=0; s<N; s++)
+                {
+                    printf("%d",board[r][s]);
+                }
+                printf("\n");
+            }
+            // ------------------------------------------------------------------------------------------------------------------------
+
+            int move = max(board,1);
+            if(move < best)
+                best = move;
+        }
+        return best;
+    }
+
+    // Free the possible positions array
+    // free(possible_board_positions);
+    // free(free_positions);
+}
+// Function to take the current board state and and the player and populates the positions of the tokens
+position * populate_free_positions(int board[N][N], int player)
+{
+	position *positions;
+    positions=(position*)calloc(N*N,sizeof(position));
+    int pos =1;
+    for(int i=0; i<N; i++)
+    {
+        for(int j=0; j<N; j++)
+        {
+            if(board[i][j] == player)
+            {
+                (positions+pos)->x = i;
+                (positions+pos)->y = j;
+                pos++;
+            }
+        }   
+        (positions+0)->x = pos-1;
+        (positions+0)->y = pos-1;
+    }
+    return positions;
+}
+
+// This function takes the board as input and returns tha number of free positions in the board
+int num_free_positions(int board[N][N])
+{
+	int count = 0; 
+	for(int i = 0; i < N; i++)
+	{
+		for(int j = 0; j < N; j++)
+		{
+			if(board[i][j] == 0)
+			{
+				count++;	
+			}
+		}
+	}
+	return(count);
+}
+
+// Function to produce all the combinations of 4 eleents of all the positions given 
+int combinations_AllPositions(position arr[], int n, int r, int index, position data[], int i, int flag)
+{
+    // ----------------------------------------- Sample printing for verification ---------------------------------------------
+	// printf("\nInitial matrix of all combinations .... ");
+	// for(int q=0; q<n; q++)
+	// {
+	// 	printf("\n%d,%d", arr[q].x,arr[q].y);
+	// }
+    // ------------------------------------------------------------------------------------------------------------------------
+
+
     // Current combination is ready ---> call distance function and store the distance
     if (index == r)
     {
         side sides[100];
         int pos = 0;
         int curr = 0;
-        for(j=0; j<r; j++)
+        for(int j=0; j<r; j++)
         {
             if(curr != j)
             {
@@ -158,43 +432,39 @@ void combinations_AllPositions(position arr[], int n, int r, int index, position
         bool result = isSquare(sides,data);
         if(result == true)
         {
-            for (j=0; j<r; j++)
+            flag = 1;
+            for (int j=0; j<r; j++)
             printf("\n(%d,%d) ",data[j].x, data[j].y);
             printf("\n");
             printf("\n The points form a square!\n");
+            return 1;
         }
-        return;
+		return 0;
     }
- 
     // When no more elements are there to put in data[]
-    if (i >= n)
-        return;
- 
-    // current is included, put next at next location
-    data[index] = arr[i];
-    combinations_AllPositions(arr, n, r, index+1, data, i+1);
- 
-    // current is excluded, replace it with next (Note that
-    // i+1 is passed, but index is not changed)
-    combinations_AllPositions(arr, n, r, index, data, i+1);
-}
-
-int distance(position point1, position point2)
-{
-	int dist = pow(point1.x - point2.x, 2) + pow(point1.y - point2.y, 2);
-	return dist;
+    else if (i >= n && flag==0)
+       return 0;
+    // 1st recursive statement - current is included, put next at next location
+    // 2nd recursive statement - current is excluded, replace it with next (Note that i+1 is passed, but index is not changed)
+    else if(flag == 0)
+    {
+        data[index] = arr[i];
+        return (combinations_AllPositions(arr, n, r, index+1, data, i+1, flag) || combinations_AllPositions(arr, n, r, index, data, i+1, flag));	
+    }
+    else
+    {
+	   return 0;
+    }
 }
 
 // Function to check if the given four points form a square
 bool isSquare(side sides[], position positions[])
 {
-	int a;
-	int b;
-	int equalSide1 = -1;
-	int equalSide2 = -1;
-	int unequalSide = -1;
-
-	if (sides[0].distance == sides[1].distance) {
+    int equalSide1 = -1;
+    int equalSide2 = -1;
+    int unequalSide = -1;
+	
+    if (sides[0].distance == sides[1].distance) {
         if (sides[0].distance != sides[2].distance) {
             equalSide1 = 0;
             equalSide2 = 1;
@@ -237,10 +507,10 @@ bool isSquare(side sides[], position positions[])
             int diagonal = opposing;
             int adjacent = sides[equalSide1].distance;
             int is_Square= true;
-            for (a = 0; a < 4; a++) {
+            for (int a = 0; a < 4; a++) {
                 int diagonalCount = 0;
                 int adjacentCount = 0;                
-                for (b = 0; b < 4; b++) {
+                for (int b = 0; b < 4; b++) {
                     if (a != b) {
                         int dist = distance(positions[a], positions[b]);
                         if (dist == diagonal) {
@@ -265,128 +535,9 @@ bool isSquare(side sides[], position positions[])
     return false;
 }
 
-//Construction of Game Tree
-void create_GameTree()
+// Function to find the distance between any two tokens on the baord
+int distance(position point1, position point2)
 {
-    int count = 0;
-    int i;
-    int j;
-    vertexT *game_tree;
-    vertexT *start;
-    vertexT *end;
-    edgeT *ed;
-    ed = NULL;
-    int game_state[N][N] = {0,0,0,0};
-    end = (vertexT *)malloc(sizeof(vertexT));
-    game_tree = end;
-    memcpy(end->element.board_state, game_state, N * N * sizeof(int));
-    end->edges = NULL;
-    end->next = NULL;
-    start = game_tree;
-    while(start->element.heuristic_value != 41)
-    {
-    	recursion_game(&start,0,0,&end,0,ed);
-        start = start->next;
-    }
-
-    // Printing the vertices and edges
-	vertexT *temp;
-    temp = game_tree;
-    edgeT *edgeList;
-    printf("\n\n Printing all the vertices\n");
-    while(temp != NULL)
-    {
-        printf("\nCount: %d\n", temp->element.heuristic_value);
-        printf("\n");
-        for (i = 0; i < N; ++i)
-        {
-            for (j = 0; j < N; ++j)
-            {
-                printf("%d", temp->element.board_state[i][j]);
-            }
-            printf("\n");
-        }
-        printf("\n\n");
-        edgeList = temp->edges;
-        printf("\nEdges\n");
-        while(edgeList != NULL)
-        {       	
-        	for(i = 0 ; i < N; i++)
-            {
-                for(j = 0; j < N; j++)
-                {
-                	printf("%d", edgeList->connectsTo->element.board_state[i][j]);
-                }
-            printf("\n");
-            }
-        	edgeList = edgeList->next;
-        	printf("\n\n");
-        }
-        temp = temp->next;
-    }
-    return;
-}
-
-// This function on giving a matrix, will produce all its children and insert them into the vertices list
-void recursion_game(vertexT **start, int row, int col, vertexT **end, int count,edgeT *ed)
-{
-	int i;
-	int j;
-	int flag = 0;
-	if(count ==0)
-	{
-		flag = 1;
-	}
-    if(row ==(N-1) && col >(N-1))
-    {
-        return;
-    }
-    int temp [N][N];
-    for(i=0; i<N; i++)
-    {
-        for(j=0; j<N; j++)
-        {
-            temp[i][j] = (*start)->element.board_state[i][j];
-        }
-    }
-
-    if((*start)->element.board_state[row][col] == 0)
-    {
-        temp[row][col] = 3;
-        
-        // Inserting the matrix on to the list of vertices once the matrix is changed
-        vertexT *t;
-        t = (vertexT *)malloc(sizeof(vertexT));
-        memcpy(t->element.board_state, temp, N * N * sizeof(int));
-        count = (*end)->element.heuristic_value+1;
-        t->element.heuristic_value = count;
-        t->edges = NULL;
-        t->next = NULL;
-        (*end)->next = t;
-        (*end) = t;
-        
-        // Adding edges to the parent node
-        edgeT *edge;
-        edge = (edgeT *)malloc(sizeof(edgeT));
-        edge->connectsTo = (*end);
-        edge->next = NULL;
-        if(flag == 1)
-        {
-        	(*start)->edges = edge;
-        }
-        else
-        {
-        	ed->next = edge;
-        }
-        ed = edge;
-	}
-	
-    if(col > (N-1))
-    {
-        col = 0;
-        row = row+1;
-    }
-    col = col+1;
-    recursion_game(start,row,col,end,count,ed);
-    return;
+    int dist = pow(point1.x - point2.x, 2) + pow(point1.y - point2.y, 2);
+    return dist;
 }
