@@ -2,7 +2,7 @@
 #include<math.h>
 #include<stdlib.h>
 #include<string.h>
-#define N 4
+#define N 3
 
 typedef struct
 {
@@ -29,6 +29,7 @@ int min(int [N][N], int );
 
 // Main function
 // TODOS : 1. Implement minimax algorithm -----DONE
+//         2. Include Depth in the implementation of minimax algorithm
 //         2. Optimize the code
 //         3. Implement alpha-beta pruning
 int main()
@@ -201,9 +202,9 @@ int max(int possible_board[N][N], int player)
 
     // Displaying the result of the current board state
     if(flag == 1 && player == 1)
-        return -1;
-    else if(flag == 1 && player == 2)
         return 1;
+    else if(flag == 1 && player == 2)
+        return -1;
     else if (flag == 0 && num_free_positions(possible_board) == 0)
         return 0;
     else
@@ -278,7 +279,7 @@ int min(int possible_board[N][N], int player)
     // To hold the size of the position array
     int pos = 0;
     int flag;
-    int best = 10000;
+    int best = 5;
 
     // Populate the player token positions to see if any combination of 4 tokens form a square
     possible_board_positions = populate_free_positions(possible_board,player);
@@ -299,9 +300,9 @@ int min(int possible_board[N][N], int player)
 
     // Displaying the result of the current board state
     if(flag == 1 && player == 1)
-        return -1;
-    else if(flag == 1 && player == 2)
         return 1;
+    else if(flag == 1 && player == 2)
+        return -1;
     else if (flag == 0 && num_free_positions(possible_board) == 0)
         return 0;
     else
