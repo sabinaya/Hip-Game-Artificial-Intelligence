@@ -24,14 +24,17 @@ int combinations_AllPositions(position [], int , int , int , position [], int ,i
 bool isSquare(side [], position []);
 int distance(position , position );
 void create_GameTree(int [N][N],int );
-int max(int [N][N], int ,int );
-int min(int [N][N], int ,int );
+int max(int [N][N], int ,int ,int ,int );
+int min(int [N][N], int ,int ,int ,int );
+int Maximum(int , int );
+int Minimum(int , int );
 
 // Main function
 // TODOS : 1. Implement minimax algorithm -----DONE
 //         2. Include Depth in the implementation of minimax algorithm -----DONE
-//         2. Optimize the code
-//         3. Implement alpha-beta pruning
+//         3. Implement alpha-beta pruning -----DONE
+//         4. Write test cases and find the accuracy of the algorithm
+//         5. Optimize the code
 int main()
 {
 	int board[N][N];
@@ -72,6 +75,8 @@ void create_GameTree(int board[N][N], int player)
     int pos = 0;  // To track the size of the positions array 
     int previous = -5000000;
     int depth = -1;
+    int a1 = -5000000;
+    int b1 = 5000000;
 	
     // ----------------------------------------- Sample printing for verification ---------------------------------------------
     printf("\nInitial Matrix\n");
@@ -142,7 +147,7 @@ void create_GameTree(int board[N][N], int player)
         }  
         // ------------------------------------------------------------------------------------------------------------------------
 
-        int current = min(possible_board,player,depth);
+        int current = min(possible_board,player,depth,a1,b1);
         printf("\nChild Score: %d",current);
 
         if(current > previous)
@@ -170,7 +175,7 @@ void create_GameTree(int board[N][N], int player)
 }	
 
 
-int max(int possible_board[N][N], int player,int depth)
+int max(int possible_board[N][N], int player, int depth, int a1, int b1)
 {
     position *possible_board_positions;
     position player_positions[N*N];
@@ -182,7 +187,7 @@ int max(int possible_board[N][N], int player,int depth)
     // To hold the size of the position array
     int pos = 0;
     int flag;
-    int best = -5000000;
+    int move;
 
     // Populate the player token positions to see if any combination of 4 tokens form a square
     possible_board_positions = populate_free_positions(possible_board,player);
@@ -214,6 +219,8 @@ int max(int possible_board[N][N], int player,int depth)
         free_positions = populate_free_positions(possible_board,0);
         free_pos_size = (free_positions + 0)->x;      // Size of the free positions array
         pos = 0;
+        int alpha = -5000000;
+        int beta = 5000000;
 
         // ----------------------------------------- Sample printing for verification ---------------------------------------------
 
@@ -255,11 +262,12 @@ int max(int possible_board[N][N], int player,int depth)
             }
             // ------------------------------------------------------------------------------------------------------------------------
 
-            int move = min(board,2,depth);
-            if(move > best)
-                best = move;
+            move = min(board,2,depth,a1,Minimum(b1,beta));
+            beta = Minimum(beta,move);
+            if(a1 > beta)
+                return beta;
         }
-        return best;
+        return beta;
     }
 
     // Free the possible positions array
@@ -268,7 +276,7 @@ int max(int possible_board[N][N], int player,int depth)
 }
 
 
-int min(int possible_board[N][N], int player,int depth)
+int min(int possible_board[N][N], int player, int depth, int a1, int b1)
 {
 
     position *possible_board_positions;
@@ -281,7 +289,7 @@ int min(int possible_board[N][N], int player,int depth)
     // To hold the size of the position array
     int pos = 0;
     int flag;
-    int best = 5000000;
+    int move;
 
     // Populate the player token positions to see if any combination of 4 tokens form a square
     possible_board_positions = populate_free_positions(possible_board,player);
@@ -310,6 +318,8 @@ int min(int possible_board[N][N], int player,int depth)
         return 0;
     else
     {
+        int alpha = -5000000;
+        int beta = 5000000;
         free_positions = populate_free_positions(possible_board,0);
         free_pos_size = (free_positions + 0)->x;      // Size of the free positions array
         pos = 0;
@@ -354,17 +364,36 @@ int min(int possible_board[N][N], int player,int depth)
             }
             // ------------------------------------------------------------------------------------------------------------------------
 
-            int move = max(board,1,depth);
-            if(move < best)
-                best = move;
+            move = max(board,1,depth,Maximum(a1,alpha),b1);
+            alpha = Maximum(alpha,move);
+            if(alpha > b1)
+                return alpha;
         }
-        return best;
+        return alpha;
     }
 
     // Free the possible positions array
     free(possible_board_positions);
     free(free_positions);
 }
+
+int Maximum(int a, int b)
+{
+    if(a > b)
+        return a;
+    else
+        return b;
+}
+
+int Minimum(int a, int b)
+{
+    if(a < b)
+        return a;
+    else
+        return b;
+}
+
+
 // Function to take the current board state and and the player and populates the positions of the tokens
 position * populate_free_positions(int board[N][N], int player)
 {
