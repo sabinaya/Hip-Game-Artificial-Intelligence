@@ -29,12 +29,14 @@ int min(int [N][N], int ,int ,int ,int );
 int Maximum(int , int );
 int Minimum(int , int );
 
-// Main function
+// Main function  ------ Function to take a board state with player 2 and find the next optimal move ( assuming 2 denotes AI )
 // TODOS : 1. Implement minimax algorithm -----DONE
 //         2. Include Depth in the implementation of minimax algorithm -----DONE
 //         3. Implement alpha-beta pruning -----DONE
-//         4. Write test cases and find the accuracy of the algorithm
-//         5. Optimize the code
+//         4. Implement negamax
+//         5. Implement negascout 
+//         6. Write test cases and find the accuracy of the algorithm
+//         7. Optimize the code
 int main()
 {
 	int board[N][N];
@@ -174,6 +176,7 @@ void create_GameTree(int board[N][N], int player)
     return;
 }	
 
+// Minimax algorithm - Min and Max functions ----------------------------------------------------------------------------------------------------------
 
 int max(int possible_board[N][N], int player, int depth, int a1, int b1)
 {
@@ -377,20 +380,28 @@ int min(int possible_board[N][N], int player, int depth, int a1, int b1)
     free(free_positions);
 }
 
+// End of Minimax algorithm - Min and Max functions ----------------------------------------------------------------------------------------------------
+
+// Function to find the maximum of two integers
 int Maximum(int a, int b)
 {
     if(a > b)
         return a;
-    else
+    else if(b > a)
         return b;
+    else
+        return a;
 }
 
+// Function to find the minimum of two integers
 int Minimum(int a, int b)
 {
     if(a < b)
         return a;
-    else
+    else if (b < a)
         return b;
+    else
+        return a;
 }
 
 
