@@ -11,11 +11,28 @@ typedef struct
 
 typedef struct
 {
-	position p1,p2;
+    position p1,p2;
     int distance;
 }side;
 
 typedef enum { false, true } bool;
+
+/*
+void print(empty_positions, free_pos_size){
+	// ----------------------------------------- Sample printing for verification ---------------------------------------------
+
+        // Copying the array values into a seperate array (Empty positios array)
+        printf("\n---------------Inside min ------------ empty positions");
+        for(int i = 1; i <= free_pos_size; i++)
+        {
+            empty_positions[pos].x = (free_positions + i)->x;
+            empty_positions[pos].y = (free_positions + i)->y;
+            printf("\n%d,%d", empty_positions[pos].x,empty_positions[pos].y);
+            pos++;
+        }
+        // ------------------------------------------------------------------------------------------------------------------------
+}*/
+
 
 position * get_free_positions(int [N][N],int );
 int num_free_positions(int [N][N]);
@@ -37,6 +54,8 @@ int Minimum(int , int );
 //         5. Implement negascout 
 //         6. Write test cases and find the accuracy of the algorithm
 //         7. Optimize the code
+
+
 int main()
 {
 	int board[N][N];
@@ -51,7 +70,7 @@ int main()
 	{
 		for(int j=0; j<N; j++)
 		{
-            printf("\n Position (%d,%d):", i,j);
+			printf("\n Position (%d,%d):", i,j);
 			scanf("%d",&board[i][j]);
 		}	
     }
