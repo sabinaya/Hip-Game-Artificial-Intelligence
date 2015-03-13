@@ -29,7 +29,7 @@ def take_input():
 	"""
 
 	data = []
-	for i in range(0,100): #We are taking input for the board. For now we use a smaller board of 3*3
+	for i in range(0,9): #We are taking input for the board. For now we use a smaller board of 3*3
 		data.append(raw_input())
 
 	print data #config of the board
@@ -45,6 +45,20 @@ def check_square(data):
 			"""
 				check across the row, col, across both diagnols
 			"""
+			if(chsq(i,j) == true):
+				return true
+	return false
+
+def chsq(x,y,data):
+	ele = data[x][y]
+	if((x==0 or x==1) and (y==0 or y==1)):
+		if x == 0 and y == 0:
+			if ele == data[x+2][y+2] == data[x+2][y] == data[x][y+2]:
+				return true
+			if ele == data[x+1][y] == data[x+1][y+1] == data[x][y+1]:
+				return true
+	return false
+			
 
 def getallsquareconfig():
 	hipsquares = []
