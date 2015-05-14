@@ -81,6 +81,9 @@ class hip:
 
 		for item in combinations(player_positions,4):
 			print "\n\n", item
+			"""
+				populating the sides using three points of the combination
+			"""
 			sides = []
 			sides.append(self.distance(item[0],item[1]));
 			sides.append(self.distance(item[0],item[2]));
@@ -92,6 +95,9 @@ class hip:
 
 	def isSquare(self, sides, player_positions):
 
+		"""
+			function to check the presence of square using the 4 points given
+		"""
 		equalSide1 = -1
 		equalSide2 = -1
 		unequalSide = -1
@@ -111,6 +117,10 @@ class hip:
 				equalSide2 = 2
 				unequalSide = 1
 
+		"""
+			If failed to satisfy the above condition, the points doesn't form a square
+    		Otherwise check for the square distance conditions
+    	"""
 		if(equalSide1 != -1):
 			opposing = 0
 			if(unequalSide == 0):
@@ -134,20 +144,28 @@ class hip:
 								diagonalCount += 1
 							elif(distance1 == adjacent):
 								adjacentCount += 1
+					"""
+						If there is one diagonal and two adjacents
+					"""
 					if((diagonalCount == 1 and adjacentCount == 2) != True):
 						is_Square = False
 						break;
 				if(is_Square == True):
-					print("\nSquare found -------------------\n");
+					"""
+						There is a square
+					"""
 					return True
 		return False
 
 	def distance(self, point1, point2):
 		"""
-			retuns the distance between two points
+			Function to find the distance between any two tokens on the baord
 		"""
 		dist = math.pow(point1[0] - point2[0], 2) + math.pow(point1[1] - point2[1], 2);
 		return dist
 
+"""
+	Calling the function
+"""
 hip_obj = hip()
 hip_obj.take_input()
