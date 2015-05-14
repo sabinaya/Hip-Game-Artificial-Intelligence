@@ -4,9 +4,12 @@ Implementation of Hip, a classic board game invented by Martin Gardner. It's a 2
 To see sample example states see here
 https://github.com/sabinaya/Hip-Game-Artificial-Intelligence/blob/master/Hip%20Sample%20Game%20States.png
 
-## To run this program
+## To run the c program
 * cc Hip.c
 * ./a.out
+
+## To run the python script
+* python hip.py
 
 ## Sample Input
 
