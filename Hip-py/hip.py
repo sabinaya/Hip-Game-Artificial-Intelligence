@@ -27,7 +27,7 @@ Step 2: Given this config return if there is possible square and then true or fa
 """
 	TODOS:	1. Tidy up
 			2. Creation of Game Tree
-				a) Implementation of minimax
+				a) Implementation of minimax (Pending : Score calc, depth consideration)
 				b) Implementation of alpha beta pruning
 """
 from itertools import combinations
@@ -92,6 +92,9 @@ class hip:
 			print(sides)
 			result = self.isSquare(sides,item)
 			print result
+			if(result == True):
+				return result
+		return False
 
 	def isSquare(self, sides, player_positions):
 
@@ -144,16 +147,11 @@ class hip:
 								diagonalCount += 1
 							elif(distance1 == adjacent):
 								adjacentCount += 1
-					"""
-						If there is one diagonal and two adjacents
-					"""
-					if((diagonalCount == 1 and adjacentCount == 2) != True):
+	
+					if((diagonalCount == 1 and adjacentCount == 2) != True): #If there is one diagonal and two adjacents
 						is_Square = False
 						break;
-				if(is_Square == True):
-					"""
-						There is a square
-					"""
+				if(is_Square == True): #There is a square
 					return True
 		return False
 
@@ -163,6 +161,56 @@ class hip:
 		"""
 		dist = math.pow(point1[0] - point2[0], 2) + math.pow(point1[1] - point2[1], 2);
 		return dist
+
+	"""
+		Functions for the Implementation of Minimax Algorithm
+	"""
+
+	def Minimax(self, board):
+		player_positions = self.populate_positions(board,player)
+		result = self.check_square(player_positions)
+		if(result == True) #Game Over?
+			return score(board)
+
+		scores = []
+		moves = []
+		possible_positions = populate_positions(board,0,player)
+		for move in possible_positions:
+			possible_game = get_new_state(board, move, player)
+			scores.append(Minimax(possible_game))
+			moves.append(move)
+		if(player == 1):
+			max_score_index = getMax_index(scores)
+			choice = moves[max_score_index]
+			return scores[max_score_index]
+		else:
+			min_score_index = getMin_index(scores)
+			choice = moves[min_score_index]
+			return scores[min_score_index]
+
+	def get_new_state(self, board, move, player):
+		board[move[0]][move[1]] = player
+		return board
+
+	def getMax_index(scores):
+		index = 0
+		max_score = 0
+		for score in scores:
+			if(score > max_score):
+				max_score = score
+				max_score_index = index
+			index += 1
+		return max_score_index
+
+	def getMin_index(scores):
+		index = 0
+		min_score = 0
+		for score in scores:
+			if(score > min_score):
+				min_score = score
+				min_score_index = index
+			index += 1
+		return min_score_index
 
 """
 	Calling the function
