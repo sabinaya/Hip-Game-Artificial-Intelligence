@@ -1,4 +1,3 @@
-# your code goes here
 """
 We use a [9][9] matrix to indicate the board of the Hip game.
 0 - it is empty
@@ -24,6 +23,13 @@ Step 1: Human driven board configurations
 Step 2: Given this config return if there is possible square and then true or false accordingly.
 """
 
+
+"""
+	TODOS:	1. Tidy up
+			2. Creation of Game Tree
+				a) Implementation of minimax
+				b) Implementation of alpha beta pruning
+"""
 from itertools import combinations
 import math
 
