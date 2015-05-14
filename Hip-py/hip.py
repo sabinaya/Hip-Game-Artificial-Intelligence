@@ -1,3 +1,4 @@
+# your code goes here
 """
 We use a [9][9] matrix to indicate the board of the Hip game.
 0 - it is empty
@@ -23,51 +24,124 @@ Step 1: Human driven board configurations
 Step 2: Given this config return if there is possible square and then true or false accordingly.
 """
 
-def take_input():
-	"""
-		Function to take input from the use of the board config
-	"""
+from itertools import combinations
+import math
 
-	data = []
-	for i in range(0,9): #We are taking input for the board. For now we use a smaller board of 3*3
-		data.append(raw_input())
+class hip:
+	def take_input(self):
+		"""
+			Function to take input from the use of the board config
+		"""
 
-	print data #config of the board
+		player = raw_input("Enter the player token number: 1. Blue  2. Red  :: ");
 
+		data = []
+		board = []
+		player_positions = []
+		print("Enter the board elements: ");
+		for i in range(0,3): #We are taking input for the board. For now we use a smaller board of 3*3
+			for j in range(0,3):
+				data.append(raw_input())
+			board.append(data)
+			data = []
 
-def check_square(data):
-	"""
-		Function returns a true or false depending on whether a square exists or not
-	"""
+		print("\nThe input board is");
+		print(board) #config of the board
 
-	for i in range(0,9):
-		for j in range(0,9):
-			"""
-				check across the row, col, across both diagnols
-			"""
-			if(chsq(i,j) == true):
-				return true
-	return false
+		player_positions = self.populate_positions(board,player)
+		print("\nThe Player positions are: \n");
+		print(player_positions)
 
-def chsq(x,y,data):
-	ele = data[x][y]
-	if((x==0 or x==1) and (y==0 or y==1)):
-		if x == 0 and y == 0:
-			if ele == data[x+2][y+2] == data[x+2][y] == data[x][y+2]:
-				return true
-			if ele == data[x+1][y] == data[x+1][y+1] == data[x][y+1]:
-				return true
-	return false
-			
+		self.check_square(player_positions)
 
-def getallsquareconfig():
-	hipsquares = []
-	"""
-		[0 1 2 3 4
-	 	5 6 7 8 9
-	 	10 11 12 13 14
-	 	15 16 17 18 19
-	 	20 21 22 23 24]
-	 	To make a square - all the 4 sides of the square will add up uniquely. Take a queue from that
-	 	to check if the square exists
-	 """
+	def populate_positions(self, board, player):
+		""" 
+			Populate the player positions on the board
+		"""
+		positions = []
+		for i in range(0,3):
+			for j in range(0,3):
+				if(board[i][j] == player):
+					positions.append([i,j])
+
+		return positions
+
+	def check_square(self, player_positions):
+		"""
+			Function returns a true or false depending on whether a square exists or not
+		"""
+		length = len(player_positions)
+		sides = []
+
+		for item in combinations(player_positions,4):
+			print "\n\n", item
+			sides = []
+			sides.append(self.distance(item[0],item[1]));
+			sides.append(self.distance(item[0],item[2]));
+			sides.append(self.distance(item[0],item[3]));
+			print("\nSides distance");
+			print(sides)
+			result = self.isSquare(sides,item)
+			print result
+
+	def isSquare(self, sides, player_positions):
+
+		equalSide1 = -1
+		equalSide2 = -1
+		unequalSide = -1
+		if(sides[0] == sides[1]):
+			if(sides[0] != sides[2]):
+				equalSide1 = 0
+				equalSide2 = 1
+				unequalSide = 2
+		elif(sides[1] == sides[2]):
+			if(sides[1] != sides[0]):
+				equalSide1 = 1
+				equalSide2 = 2
+				unequalSide = 0        
+		elif(sides[0] == sides[2]):
+			if(sides[0] != sides[1]):
+				equalSide1 = 0
+				equalSide2 = 2
+				unequalSide = 1
+
+		if(equalSide1 != -1):
+			opposing = 0
+			if(unequalSide == 0):
+				opposing = self.distance(player_positions[2], player_positions[3]);
+			elif(unequalSide == 1):
+				opposing = self.distance(player_positions[1], player_positions[3]);
+			elif(unequalSide == 2):
+				opposing = self.distance(player_positions[1], player_positions[2]);
+
+			if(opposing == sides[unequalSide]):
+				diagonal = opposing
+				adjacent = sides[equalSide1]
+				is_Square = True
+				for a in range(0,4):
+					diagonalCount = 0
+					adjacentCount = 0 
+					for b in range(0,4):
+						if(a != b):
+							distance1 = self.distance(player_positions[a], player_positions[b]);
+							if(distance1 == diagonal):
+								diagonalCount += 1
+							elif(distance1 == adjacent):
+								adjacentCount += 1
+					if((diagonalCount == 1 and adjacentCount == 2) != True):
+						is_Square = False
+						break;
+				if(is_Square == True):
+					print("\nSquare found -------------------\n");
+					return True
+		return False
+
+	def distance(self, point1, point2):
+		"""
+			retuns the distance between two points
+		"""
+		dist = math.pow(point1[0] - point2[0], 2) + math.pow(point1[1] - point2[1], 2);
+		return dist
+
+hip_obj = hip()
+hip_obj.take_input()

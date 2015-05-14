@@ -464,7 +464,7 @@ int num_free_positions(int board[N][N])
 	return(count);
 }
 
-// Function to produce all the combinations of 4 eleents of all the positions given 
+// Function to produce all the combinations of 4 elements of all the positions given 
 int combinations_AllPositions(position arr[], int n, int r, int index, position data[], int i, int flag)
 {
     // ----------------------------------------- Sample printing for verification ---------------------------------------------
@@ -533,7 +533,7 @@ bool isSquare(side sides[], position positions[])
             equalSide2 = 1;
             unequalSide = 2;
         }
-    } else if (sides[1].distance == sides [2].distance) {
+    } else if (sides[1].distance == sides[2].distance) {
         if (sides[1].distance != sides[0].distance) {
             equalSide1 = 1;
             equalSide2 = 2;
