@@ -14,7 +14,7 @@ The second approach is used in this code
 """
 
 """
-This script is designed according to the human vs computer stratergy. 
+This script is designed according to the human vs computer strategy. 
 The player starts with an empty board and takes the turn first the follwed by the computer's turn.
 This continues till the board is filled
 """
@@ -158,11 +158,16 @@ class hip:
 		result = 0
 		while(result == 0 and len(free_positions) != 0):
 			if(player == True):
+				flag = 0
 				print "\nIts your turn! \nEnter the position where the token is to be placed: \n"
-				x = raw_input("Enter the x position: ")
-				y = raw_input("Enter the y position: ")
-				# TODOS : Check the position if it is alredy filled
-				board[int(x)][int(y)] = '1'
+				while(flag == 0):
+					x = raw_input("Enter the x position: ")
+					y = raw_input("Enter the y position: ")
+					if(board[int(x)][int(y)] == '0'):
+						board[int(x)][int(y)] = '1'
+						flag = 1
+					else:
+						print "\nThe position is already filled! Enter some other position!"
 				print "\nUpdated board", board
 				player = False
 			else:
