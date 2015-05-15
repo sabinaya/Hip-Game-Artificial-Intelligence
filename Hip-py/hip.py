@@ -9,29 +9,27 @@ No matter which inclination and position.
 2. Else we have function which takes the current input of the board and
 predicts whether a square is possible or not
 At any point of time as soon as a square is formed by either R or B, that person loses and the game terminates.
+
+The second approach is used in this code
 """
 
 """
-First attempt to solve the problem 
-All the input will be given by the human itself.
-There will no human vs computer. 
+This script is designed according to the human vs computer stratergy. 
+The player starts with an empty board and takes the turn first the follwed by the computer's turn.
+This continues till the board is filled
 """
 
 """
-In this program we are taking input states of different board configuration.
-Step 1: Human driven board configurations
-Step 2: Given this config return if there is possible square and then true or false accordingly.
-"""
-
-
-"""
-	TODOS:	1. Tidy up
-			2. Creation of Game Tree
-				a) Implementation of minimax (Pending : Score calc, depth consideration)
+	TODOS:	1. Tidy up ----DONE
+			2. Implementation of the human vs computer game plan ----DONE
+			3. Creation of Game Tree
+				a) Implementation of minimax ----DONE
 				b) Implementation of alpha beta pruning
 """
 from itertools import combinations
 import math
+import copy
+import sys
 
 class hip:
 	def take_input(self):
@@ -39,26 +37,19 @@ class hip:
 			Function to take input from the use of the board config
 		"""
 
-		player = raw_input("Enter the player token number: 1. Blue  2. Red  :: ");
-
 		data = []
 		board = []
 		player_positions = []
-		print("Enter the board elements: ");
-		for i in range(0,3): #We are taking input for the board. For now we use a smaller board of 3*3
+		for i in range(0,3): #We are defining the initial empty board For now we use a smaller board of 3*3
 			for j in range(0,3):
-				data.append(raw_input())
+				data.append('0')
 			board.append(data)
 			data = []
 
-		print("\nThe input board is");
-		print(board) #config of the board
+		print("\nThe initial board is");
+		print(board) #Empty board
 
-		player_positions = self.populate_positions(board,player)
-		print("\nThe Player positions are: \n");
-		print(player_positions)
-
-		self.check_square(player_positions)
+		self.Minimax(board)
 
 	def populate_positions(self, board, player):
 		""" 
@@ -69,7 +60,6 @@ class hip:
 			for j in range(0,3):
 				if(board[i][j] == player):
 					positions.append([i,j])
-
 		return positions
 
 	def check_square(self, player_positions):
@@ -80,7 +70,6 @@ class hip:
 		sides = []
 
 		for item in combinations(player_positions,4):
-			print "\n\n", item
 			"""
 				populating the sides using three points of the combination
 			"""
@@ -88,10 +77,7 @@ class hip:
 			sides.append(self.distance(item[0],item[1]));
 			sides.append(self.distance(item[0],item[2]));
 			sides.append(self.distance(item[0],item[3]));
-			print("\nSides distance");
-			print(sides)
 			result = self.isSquare(sides,item)
-			print result
 			if(result == True):
 				return result
 		return False
@@ -162,55 +148,106 @@ class hip:
 		dist = math.pow(point1[0] - point2[0], 2) + math.pow(point1[1] - point2[1], 2);
 		return dist
 
+
 	"""
 		Functions for the Implementation of Minimax Algorithm
 	"""
-
 	def Minimax(self, board):
-		player_positions = self.populate_positions(board,player)
-		result = self.check_square(player_positions)
-		if(result == True) #Game Over?
-			return score(board)
+		player = True
+		free_positions = self.populate_positions(board, '0')
+		result = 0
+		while(result == 0 and len(free_positions) != 0):
+			if(player == True):
+				print "\nIts your turn! \nEnter the position where the token is to be placed: \n"
+				x = raw_input("Enter the x position: ")
+				y = raw_input("Enter the y position: ")
+				# TODOS : Check the position if it is alredy filled
+				board[int(x)][int(y)] = '1'
+				print "\nUpdated board", board
+				player = False
+			else:
+				print "\n\nComputer's turn"
+				board = self.firstBestMove(board, 0)
+				print "\nUpdated board", board
+				player = True
 
-		scores = []
-		moves = []
-		possible_positions = populate_positions(board,0,player)
-		for move in possible_positions:
-			possible_game = get_new_state(board, move, player)
-			scores.append(Minimax(possible_game))
-			moves.append(move)
-		if(player == 1):
-			max_score_index = getMax_index(scores)
-			choice = moves[max_score_index]
-			return scores[max_score_index]
+			free_positions = self.populate_positions(board, '0')
+			result = self.evaluate_game(board)
+			if(result == 1):
+				print "\nYou lose!"
+			elif(result == 2):
+				print "\nYou won!"
+
+	def firstBestMove(self, board, depth):
+
+		free_positions = self.populate_positions(board, '0')
+		previous = -sys.maxint - 1
+		depth += 1
+
+		for position in free_positions:
+			child = copy.deepcopy(board)
+			child[int(position[0])][int(position[1])] = '2'
+			current = self.min(child, depth)
+			if(current > previous):
+				bestChild = child
+				previous = current
+		return bestChild
+
+	def max(self, board, depth):
+
+		free_positions = self.populate_positions(board, '0')
+		result = self.evaluate_game(board)
+
+		if(result == 1):
+			return depth-10000
+		elif(result == 2):
+			return 10000-depth
+		elif(result == 0 and len(free_positions) == 0):
+			return 0
+
+		best = -sys.maxint - 1
+		depth += 1
+		for position in free_positions:
+			new_board = copy.deepcopy(board)
+			new_board[int(position[0])][int(position[1])] = '2'
+			move = self.min(new_board, depth)
+			if(move > best):
+				best = move
+		return best
+
+	def min(self, board, depth):
+
+		free_positions = self.populate_positions(board, '0')
+		result = self.evaluate_game(board)
+
+		if(result == 1):
+			return depth-10000
+		elif(result == 2):
+			return 10000-depth
+		elif(result == 0 and len(free_positions) == 0):
+			return 0
+
+		best = sys.maxint
+		depth += 1
+		for position in free_positions:
+			new_board = copy.deepcopy(board)
+			new_board[int(position[0])][int(position[1])] = '1'
+			move = self.max(new_board, depth)
+			if(move < best):
+				best = move
+		return best
+
+	def evaluate_game(self, board):
+		player_positions = self.populate_positions(board, '1')
+		player_result = self.check_square(player_positions)
+		computer_positions = self.populate_positions(board, '2')
+		computer_result = self.check_square(computer_positions)
+		if(player_result == True):
+			return 1
+		elif(computer_result == True):
+			return 2
 		else:
-			min_score_index = getMin_index(scores)
-			choice = moves[min_score_index]
-			return scores[min_score_index]
-
-	def get_new_state(self, board, move, player):
-		board[move[0]][move[1]] = player
-		return board
-
-	def getMax_index(scores):
-		index = 0
-		max_score = 0
-		for score in scores:
-			if(score > max_score):
-				max_score = score
-				max_score_index = index
-			index += 1
-		return max_score_index
-
-	def getMin_index(scores):
-		index = 0
-		min_score = 0
-		for score in scores:
-			if(score > min_score):
-				min_score = score
-				min_score_index = index
-			index += 1
-		return min_score_index
+			return 0
 
 """
 	Calling the function
