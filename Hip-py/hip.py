@@ -204,9 +204,9 @@ class hip:
 		result = self.evaluate_game(board)
 
 		if(result == 1):
-			return depth-10000
-		elif(result == 2):
 			return 10000-depth
+		elif(result == 2):
+			return depth-10000
 		elif(result == 0 and len(free_positions) == 0):
 			return 0
 
@@ -226,9 +226,9 @@ class hip:
 		result = self.evaluate_game(board)
 
 		if(result == 1):
-			return depth-10000
-		elif(result == 2):
 			return 10000-depth
+		elif(result == 2):
+			return depth-10000
 		elif(result == 0 and len(free_positions) == 0):
 			return 0
 
