@@ -24,7 +24,7 @@ This continues till the board is filled
 			2. Implementation of the human vs computer game plan ----DONE
 			3. Creation of Game Tree
 				a) Implementation of minimax ----DONE
-				b) Implementation of alpha beta pruning
+				b) Implementation of alpha beta pruning ----DONE
 """
 from itertools import combinations
 import math
@@ -49,7 +49,7 @@ class hip:
 		print("\nThe initial board is");
 		print(board) #Empty board
 
-		self.Minimax(board)
+		self.AlphaBetaMinimax(board)
 
 	def populate_positions(self, board, player):
 		""" 
@@ -152,7 +152,7 @@ class hip:
 	"""
 		Functions for the Implementation of Minimax Algorithm
 	"""
-	def Minimax(self, board):
+	def AlphaBetaMinimax(self, board):
 		player = True
 		free_positions = self.populate_positions(board, '0')
 		result = 0
@@ -192,13 +192,13 @@ class hip:
 		for position in free_positions:
 			child = copy.deepcopy(board)
 			child[int(position[0])][int(position[1])] = '2'
-			current = self.min(child, depth)
+			current = self.min(child, depth, -sys.maxint - 1, sys.maxint)
 			if(current > previous):
 				bestChild = child
 				previous = current
 		return bestChild
 
-	def max(self, board, depth):
+	def max(self, board, depth, alpha, beta):
 
 		free_positions = self.populate_positions(board, '0')
 		result = self.evaluate_game(board)
@@ -210,17 +210,18 @@ class hip:
 		elif(result == 0 and len(free_positions) == 0):
 			return 0
 
-		best = -sys.maxint - 1
 		depth += 1
 		for position in free_positions:
 			new_board = copy.deepcopy(board)
 			new_board[int(position[0])][int(position[1])] = '2'
-			move = self.min(new_board, depth)
-			if(move > best):
-				best = move
-		return best
+			move = self.min(new_board, depth, alpha, beta)
+			if(move > alpha): #Find max and store in alpha
+				alpha = move
+			if(alpha >= beta): #Beta cut-off
+				break
+		return alpha
 
-	def min(self, board, depth):
+	def min(self, board, depth, alpha, beta):
 
 		free_positions = self.populate_positions(board, '0')
 		result = self.evaluate_game(board)
@@ -232,15 +233,16 @@ class hip:
 		elif(result == 0 and len(free_positions) == 0):
 			return 0
 
-		best = sys.maxint
 		depth += 1
 		for position in free_positions:
 			new_board = copy.deepcopy(board)
 			new_board[int(position[0])][int(position[1])] = '1'
-			move = self.max(new_board, depth)
-			if(move < best):
-				best = move
-		return best
+			move = self.max(new_board, depth, alpha, beta)
+			if(move < beta): #Find min and store in beta
+				beta = move
+			if(alpha >= beta): #alpha cut-off
+				break
+		return beta
 
 	def evaluate_game(self, board):
 		player_positions = self.populate_positions(board, '1')
