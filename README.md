@@ -14,3 +14,6 @@ https://github.com/sabinaya/Hip-Game-Artificial-Intelligence/blob/master/Hip%20S
 ## Sample Input
 
 ## Sample Output
+
+## Game as Django application(Link to the repository):
+* https://github.com/sabinaya/Hip-as-Django-Application
